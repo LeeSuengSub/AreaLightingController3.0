@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tab1"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/csv_group_setting" />
+
+    <item
+        android:id="@+id/tab2"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/individual_group_setting" />
+    <item
+        android:id="@+id/tab3"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/gateway_setting" />
+    <item
+        android:id="@+id/tab4"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/beacon_check" />
+</menu>

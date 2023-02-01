@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Total_Layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:id="@+id/loginForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal">
+
+            <ImageView
+                android:id="@+id/light_image"
+                android:layout_width="95dp"
+                android:layout_height="373dp"
+                android:src="@drawable/bulb_off_set_with_app_name" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="32dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/loginEdits"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="200dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/user_id"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/edittext_bg"
+                android:hint="아이디"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:paddingLeft="10dp"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/user_password"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/edittext_bg"
+                android:hint="비밀번호"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:padding="5dp"
+                android:paddingLeft="10dp"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/login_btn_bg"
+                android:text="로그인"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:letterSpacing="0.01"
+                android:textColor="#f00000"
+                android:textSize="15sp"
+                android:visibility="gone"
+                tools:text="아이디 또는 비밀번호가 일치하지 않습니다. 비밀번호는 최소 6자 이상입니다." />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Copyrightⓒ WOORI SYSTEM All Rights Reserved"
+            android:textColor="@color/copyright" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

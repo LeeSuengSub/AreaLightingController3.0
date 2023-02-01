@@ -1,0 +1,117 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\wr_laptop4\\.android\\ictapk.jks')
+            storePassword 'v9029390'
+            keyPassword 'v9029390'
+            keyAlias 'key0'
+        }
+        release {
+            storeFile file('C:\\android_workspace\\AreaLightingController\\ictapk.jks')
+            storePassword 'v9029390'
+            keyPassword 'v9029390'
+            keyAlias 'key0'
+        }
+    }
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "net.woorisys.lighting.control3.AreaLighting"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
+    }
+
+    lintOptions {
+
+        checkReleaseBuilds false
+
+        // Or, if you prefer, you can continue to check for errors in release builds,
+
+        // but continue the build even when errors are found:
+
+        abortOnError false
+
+    }
+
+    packagingOptions {
+
+        exclude 'META-INF/DEPENDENCIES.txt'
+
+        exclude 'META-INF/LICENSE.txt'
+
+        exclude 'META-INF/NOTICE.txt'
+
+        exclude 'META-INF/NOTICE'
+
+        exclude 'META-INF/LICENSE'
+
+        exclude 'META-INF/DEPENDENCIES'
+
+        exclude 'META-INF/notice.txt'
+
+        exclude 'META-INF/license.txt'
+
+        exclude 'META-INF/dependencies.txt'
+
+        exclude 'META-INF/LGPL2.1'
+
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-vector-drawable:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //AppbarLayout
+    //implementation 'com.android.support:design:27.0.0'
+    //버터나이프
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    /**비컨**/
+    implementation 'org.altbeacon:android-beacon-library:2.12.3'
+
+    //롬보크
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor "org.projectlombok:lombok:1.18.24"
+    implementation 'org.glassfish:javax.annotation:10.0-b28'
+    //피카소
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    //GSON
+    implementation 'com.google.code.gson:gson:2.6.1'
+    //Progress
+//    implementation 'com.emredavarci:circleprogressbar:1.0.4'
+    implementation 'com.dinuscxj:circleprogressbar:1.3.0'
+    /**레트로핏**/
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.+'
+
+    implementation 'com.opencsv:opencsv:3.9'
+}

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">AreaLightingControl3.0</string>
+    <string name="copyright">Copyrightⓒ WOORI SYSTEM All Rights Reserved</string>
+    <string name="connect_dongle">동글 연결하기</string>
+    <string name="individual_group_setting">개별 그룹 설정</string>
+    <string name="gateway_setting">게이트웨이 설정</string>
+    <string name="beacon_check">비컨 확인</string>
+    <string name="csv_group_setting">CSV 그룹 설정</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="press_back_message">Press \'Back\' button again to exit.</string>
+    <string name="title_activity_search">SearchActivity</string>
+
+    !-- Beacon 관련 Resource -->
+    <string name="beacon_parser">m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25</string>
+    <string name="beacon_id">20151005886456544159013500201901</string>
+</resources>

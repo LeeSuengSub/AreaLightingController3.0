@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.woorisys.lighting.control3.admin">
+
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Bluetooth 관련 Permission -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- 파일 Storage 관련 Permission -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_icon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_icon_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <receiver
+            android:name="net.woorisys.lighting.control3.admin.sjp.usbManagement"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.psj.setting.dimming"/>
+                <action android:name="com.android.psj.setting.group"/>
+                <action android:name="com.android.psj.setting.interrupt"/>
+                <action android:name="com.android.psj.setting.maintenance"/>
+                <action android:name="com.android.psj.usb.init"/>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="net.woorisys.lighting.control3.admin.MainActivity"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name="net.woorisys.lighting.control3.admin.dongle.ConnectDongleActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name="net.woorisys.lighting.control3.admin.fragment.BaseActivity"
+            android:label="@string/title_activity_base"
+            android:launchMode="singleInstance"></activity>
+        <activity
+            android:name="net.woorisys.lighting.control3.admin.search.SearchActivity"
+            android:label="@string/title_activity_search"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="net.woorisys.lighting.control3.admin.LoginActivity"
+            android:launchMode="singleInstance" />
+    </application>
+
+</manifest>
