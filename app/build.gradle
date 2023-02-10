@@ -114,4 +114,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.+'
 
     implementation 'com.opencsv:opencsv:3.9'
+
+    implementation 'com.ssomai:android.scalablelayout:2.1.6'
 }

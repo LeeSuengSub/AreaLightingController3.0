@@ -574,6 +574,9 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 	{
 		String response=sendCommand(pduBase.encode());
 
+		System.out.println("requestPDUBase3 => : " + pduBase);
+		System.out.println("requestPDUBase3 ==> : "+ pduBase.encode());
+
 		Log.d(TAG,"RESPONSE  : "+response);
 
 		NormalResponsePDU normalResponsePDU=new NormalResponsePDU();

@@ -15,6 +15,7 @@ public class GroupRequestPDU2 extends RequestPDUBase3 {
 
 	public GroupRequestPDU2(String Gateway,String serial) {
 		super(Gateway,F);
+//		this.gateway = Gateway; //20230207
 		this.serial=serial;
 	}
 
@@ -22,9 +23,10 @@ public class GroupRequestPDU2 extends RequestPDUBase3 {
 	public String encode() {
 
 		StringBuilder sb=new StringBuilder();
-		sb.append(gateway);
-		sb.append(SEPARATOR);
-		sb.append(F);
+//		sb.append(gateway);
+//		sb.append(SEPARATOR);
+//		sb.append(F);
+//		sb.append(SEPARATOR); //20230207
 		sb.append(serial);
 		sb.append(SEPARATOR);
 		sb.append(GET_R_BLE_1_GROUP);

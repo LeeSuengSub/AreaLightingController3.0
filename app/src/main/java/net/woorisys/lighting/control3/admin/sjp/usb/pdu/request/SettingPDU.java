@@ -7,7 +7,7 @@ public class SettingPDU extends RequestPDUBase3 {
     String gateway="";
 
     public SettingPDU(String Gateway,String serial) {
-        super(Gateway,Gateway);
+        super(Gateway,"FFFF");
         System.out.println("Gateway => : "+Gateway);
 
         this.serial=serial;
