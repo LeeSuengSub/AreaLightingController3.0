@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\wr_laptop4\\.android\\ictapk.jks')
+            storeFile file('C:\\dev\\android_workspace\\backups\\AreaLightingController\\ictapk.jks')
             storePassword 'v9029390'
             keyPassword 'v9029390'
             keyAlias 'key0'
         }
         release {
-            storeFile file('C:\\android_workspace\\AreaLightingController\\ictapk.jks')
+            storeFile file('C:\\dev\\android_workspace\\backups\\AreaLightingController\\ictapk.jks')
             storePassword 'v9029390'
             keyPassword 'v9029390'
             keyAlias 'key0'
