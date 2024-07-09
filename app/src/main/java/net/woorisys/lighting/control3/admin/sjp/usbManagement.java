@@ -289,7 +289,7 @@ public class usbManagement extends BroadcastReceiver {
                                                 String [] parsing=groupRes.getRawContent().split(",");
                                                 String Count=parsing[1];
                                                 String Group="그룹 : ";
-                                                for(int i=2; i<Integer.valueOf(Count)*2+2;i++)
+                                                for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
                                                 {
                                                     Log.d(TAG,"PDU ITEM : "+parsing[i]);
                                                     Group+=parsing[i];
