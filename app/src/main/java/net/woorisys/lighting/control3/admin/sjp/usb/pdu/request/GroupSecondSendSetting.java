@@ -1,13 +1,13 @@
 package net.woorisys.lighting.control3.admin.sjp.usb.pdu.request;
 
-public class GroupSendSetting extends RequestPDUBase3 {
+public class GroupSecondSendSetting extends RequestPDUBase3 {
 
     String gateway;
     String serial ="";
     String[] members;
     String[] type;
 
-    public GroupSendSetting(String Gateway,String serial,String[] members,String[] type) {
+    public GroupSecondSendSetting (String Gateway,String serial,String[] members,String[] type) {
         super(Gateway,F);
         this.serial=serial;
         this.members=members;
@@ -20,7 +20,7 @@ public class GroupSendSetting extends RequestPDUBase3 {
         //sb.append(SEPARATOR);
         sb.append(serial);
         sb.append(SEPARATOR);
-        sb.append(SET_R_BLE_1_GROUP);
+        sb.append(SET_R_BLE_2_GROUP);
 //        sb.append(SEPARATOR);
 //        sb.append(members.length);
         for (int i=0;i<members.length;i++) {

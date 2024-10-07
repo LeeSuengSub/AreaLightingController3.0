@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import net.woorisys.lighting.control3.admin.sjp.observer.BroadcastReceiverListener;
@@ -49,10 +50,14 @@ public class usbManagement extends BroadcastReceiver {
     @Getter private final static String Action_Channel_Change="dongle.chanel.change";
     /** 구역등 그룹 설정 **/
     @Getter private final static String Action_Group_Setting="area.group.setting";
+    @Getter private final static String Action_Second_Group_Setting="area.second.group.setting";
     /** 구역등 그룹 확인 **/
     @Getter private final static String Action_Group_Check="area.group.check";
+    @Getter private final static String Action_Second_Group_Check="area.second.group.check";
     /** 구역등 그룹 적용 **/
     @Getter private final static String Action_Setting_Confirm="area.setting.confirm";
+
+    @Getter private final static String Action_Second_Group_Setting_Confirm="area.second.group.setting.confirm";
     /** 라우터 리조인 **/
     @Getter private final static String Action_Router_Rejoin="router.rejoin";
 
@@ -150,13 +155,16 @@ public class usbManagement extends BroadcastReceiver {
                                     line=reader.readLine();
                                     if (line == null)
                                         break;
-                                    String[] columns = line.split(",");
+
+                                    String[] lines = line.split("\n");
+                                    String[] columns = lines[0].split(",");
                                     if (columns.length < 2)
                                         continue;
 
                                     String id = columns[1].trim(); //구역등
                                     String gateway=columns[0].trim(); //게이트웨이
-                                    int length =Integer.valueOf(columns[2].trim()); //data length
+                                    int length =Integer.valueOf(columns[3].trim()); //data length
+                                    String group = columns[2].trim();
                                     int total_len =length * 2; //data length
                                     String[] memberIds = new String[length]; //주차면 ID
                                     String[] memberTypes = new String[length]; //주차면 type
@@ -167,7 +175,8 @@ public class usbManagement extends BroadcastReceiver {
                                     if(id.equals(Serial_Send) || id==Serial_Send)
                                     {
                                         int temp = 0;
-                                        for(int i=3; i<total_len+3;i=i+2)
+
+                                        for(int i=3; i < total_len+3; i=i+2)
                                         {
                                             String member = columns[i].trim();
                                             String type = columns[i+1].trim();
@@ -187,7 +196,7 @@ public class usbManagement extends BroadcastReceiver {
                                             handler.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    listener.Result(FragmentValue.ScannerSetting,true,"요청이 정상적으로 처리되었습니다."+gateway+","+Serial_Send);
+                                                    listener.Result(FragmentValue.ScannerSetting,true,"요청이 정상적으로 처리되었습니다."+gateway+","+Serial_Send+","+group);
                                                 }
                                             });
                                             Looper.loop();
@@ -222,6 +231,136 @@ public class usbManagement extends BroadcastReceiver {
                                         Looper.loop();
                                     }
                                 } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }.start();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            //endregion
+
+            //region 그룹 전송
+            case Action_Second_Group_Setting:
+
+                String Serial_Second_Send=intent.getExtras().getString("serial");
+                String Line_Second_Send = intent.getExtras().getString("line");
+
+                Log.d("SS1234"," "+Serial_Second_Send);
+                Log.d("SS1234","Line_Second_Send : "+Line_Second_Send);
+
+                // 받은 값이 없을 때 처리해주면 X
+                if(Serial_Second_Send.isEmpty() )
+                {
+                    listener.Result(FragmentValue.ScannerSetting,false,"입력되지 않은 값이 있습니다. 확인하여 주세요.");
+                    return;
+                }
+
+                path=RememberData.getInstance().getSavefilepath();
+                Log.d(TAG,"path : "+path);
+                if(path.toString()=="NULL")
+                {
+                    listener.Result(FragmentValue.ScannerSetting,false,"파일이 선택되어 있지 않습니다.");
+                    return;
+                }
+                try {
+                    FileInputStream in=new FileInputStream(path);
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+
+                            int Count=0;
+
+                            while (true)
+                            {
+                                String line;
+
+                                try {
+                                    line=Line_Second_Send;
+                                    if (line == null)
+                                        break;
+
+                                    String[] lines = line.split("\n");
+                                    String[] columns = lines[0].split(",");
+                                    if (columns.length < 2)
+                                        continue;
+
+                                    String id = columns[1].trim(); //구역등
+                                    String gateway=columns[0].trim(); //게이트웨이
+                                    int length =Integer.valueOf(columns[3].trim()); //data length
+                                    String group = columns[2].trim();
+                                    int total_len =length * 2; //data length
+                                    String[] memberIds = new String[length]; //주차면 ID
+                                    String[] memberTypes = new String[length]; //주차면 type
+
+                                    Log.d(TAG,"ID : "+id+" / SIZE : "+(total_len));
+                                    Count++;
+                                    // id 가 일치하는 것이 존재 할 경우
+                                    if(id.equals(Serial_Second_Send) || id==Serial_Second_Send)
+                                    {
+                                        int temp = 0;
+                                        for(int i=3; i<total_len+3;i=i+2)
+                                        {
+                                            String member = columns[i].trim();
+                                            String type = columns[i+1].trim();
+
+                                            memberIds[temp] = member;
+                                            memberTypes[temp] = type;
+                                            temp++;
+                                        }
+
+                                        setDongleChannel(gateway);
+
+
+                                        if(usbDeviceManager.GroupSecondSendCheck(gateway,Serial_Second_Send,memberIds,memberTypes))
+                                        {
+                                            Looper.prepare();
+                                            Handler handler=new Handler();
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    listener.Result(FragmentValue.ScannerSetting,true,"요청이 정상적으로 처리되었습니다."+gateway+","+Serial_Second_Send +","+group);
+                                                }
+                                            });
+                                            Looper.loop();
+                                        }
+                                        else
+                                        {
+                                            Looper.prepare();
+                                            Handler handler=new Handler();
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    listener.Result(FragmentValue.ScannerSetting,false,"요청이 정상적으로 처리되지 않았습니다.");
+                                                }
+                                            });
+                                            Looper.loop();
+                                        }
+                                        break;
+                                    }
+
+                                    // 일치하는 Serial ID 가 없을 경우
+                                    if(totalDevices==Count)
+                                    {
+                                        Looper.prepare();
+                                        Handler handler=new Handler();
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                listener.Result(FragmentValue.ScannerSetting,false,"일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.");
+                                            }
+                                        });
+
+                                        Looper.loop();
+                                    }
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -291,12 +430,153 @@ public class usbManagement extends BroadcastReceiver {
                                                 String Group="그룹 : ";
                                                 for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
                                                 {
+//                                                    String hexDec = String.valueOf(Integer.parseInt(parsing[i],16));
                                                     Log.d(TAG,"PDU ITEM : "+parsing[i]);
+//                                                    Log.d(TAG,"hexDec : "+hexDec);
                                                     Group+=parsing[i];
+                                                    Group+=",";
 
                                                     if(i!=Integer.valueOf(Count)*2+1)
                                                     {
-                                                        Group+=",";
+//                                                        Group+=",";
+                                                    }
+                                                }
+
+                                                String Result=" 전체 그룹 갯수 : "+Count+"\n"+Group;
+                                                Log.d(TAG,"PDU RESULT : "+Result);
+
+                                                Looper.prepare();
+                                                Handler handler=new Handler();
+                                                handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        listener.Result(FragmentValue.ScannerSetting,true,Result);
+                                                    }
+                                                });
+                                                Looper.loop();
+                                            }
+                                            else
+                                            {
+                                                Looper.prepare();
+                                                Handler handler=new Handler();
+                                                handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        listener.Result(FragmentValue.ScannerSetting,false,"수집에 실패하였습니다.");
+                                                    }
+                                                });
+                                                Looper.loop();
+
+                                                return;
+                                            }
+                                        }
+                                        catch (NullPointerException e)
+                                        {
+                                            Looper.prepare();
+                                            Handler handler=new Handler();
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    listener.Result(FragmentValue.ScannerSetting,false,e.getMessage());
+                                                }
+                                            });
+                                            Looper.loop();
+                                        }
+                                    }
+
+                                    // 일치하는 Serial ID 가 없을 경우
+                                    if(totalDevices==cnt)
+                                    {
+                                        Looper.prepare();
+                                        Handler handler=new Handler();
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                listener.Result(FragmentValue.ScannerSetting,false,"일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.");
+                                            }
+                                        });
+                                        Looper.loop();
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }.start();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            //endregion
+
+            //region 그룹 확인
+            case Action_Second_Group_Check:
+
+                String Serial_Second_Check=intent.getExtras().getString("serial");
+
+                Log.d("SS1234"," "+Serial_Second_Check);
+
+                path=RememberData.getInstance().getSavefilepath();
+                Log.d(TAG,"path : "+path);
+                if(path.toString()=="NULL")
+                {
+                    listener.Result(FragmentValue.ScannerSetting,false,"파일이 선택되어 있지 않습니다.");
+                    return;
+                }
+                try {
+                    FileInputStream in=new FileInputStream(path);
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+
+                            int cnt=0;
+
+                            while (true)
+                            {
+                                String line;
+
+                                try {
+                                    line=reader.readLine();
+                                    if (line == null)
+                                        break;
+                                    String[] columns = line.split(",");
+                                    if (columns.length < 2)
+                                        continue;
+
+                                    String gateway=columns[0].trim();
+                                    String id = columns[1].trim();
+
+                                    cnt++;
+                                    // id 가 일치하는 것이 존재 할 경우
+
+                                    if(id.equals(Serial_Second_Check) || id==Serial_Second_Check)
+                                    {
+                                        setDongleChannel(gateway);
+                                        GroupResponsePDU2 groupRes=usbDeviceManager.sendGroupSecondRequest2(gateway,Serial_Second_Check);
+                                        Log.d(TAG,"PDU 2 Result : "+groupRes.getRawContent());
+
+                                        try
+                                        {
+                                            if(groupRes.getRawContent()!=null)
+                                            {
+                                                String [] parsing=groupRes.getRawContent().split(",");
+                                                String Count=parsing[1];
+                                                String Group="그룹 : ";
+                                                for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
+                                                {
+                                                    String hexDec = String.valueOf(Integer.parseInt(parsing[i],16));
+                                                    Log.d(TAG,"PDU ITEM : "+parsing[i]);
+//                                                    Log.d(TAG,"hexDec : "+hexDec);
+                                                    Group+=parsing[i];
+                                                    Group+=",";
+
+                                                    if(i!=Integer.valueOf(Count)*2+1)
+                                                    {
+//                                                        Group+=",";
                                                     }
                                                 }
 
@@ -414,6 +694,83 @@ public class usbManagement extends BroadcastReceiver {
                                     {
                                         setDongleChannel(gateway);
                                         usbDeviceManager.Setting(gateway, serial);
+                                    }
+
+                                    // 일치하는 Serial ID 가 없을 경우
+                                    if(totalDevices==cnt)
+                                    {
+                                        Looper.prepare();
+                                        Handler handler=new Handler();
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                listener.Result(FragmentValue.ScannerSetting,true,"일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.");
+                                            }
+                                        });
+
+                                        Looper.loop();
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                    }.start();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            //endregion
+
+            // region 그룹 적용
+            case Action_Second_Group_Setting_Confirm:
+
+                String serial_second_group=intent.getExtras().getString("serial");
+
+                Log.d(TAG, " Serial_Setting : "+intent.getExtras().getString("serial"));
+
+                path=RememberData.getInstance().getSavefilepath();
+                Log.d(TAG,"path : "+path);
+                if(path.toString()=="NULL")
+                {
+                    listener.Result(FragmentValue.ScannerSetting,false,"파일이 선택되어 있지 않습니다.");
+                    return;
+                }
+                try {
+                    FileInputStream in=new FileInputStream(path);
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+
+                            int cnt=0;
+
+                            while (true)
+                            {
+                                String line;
+
+                                try {
+                                    line=reader.readLine();
+                                    if (line == null)
+                                        break;
+                                    String[] columns = line.split(",");
+                                    if (columns.length < 2)
+                                        continue;
+
+                                    String id = columns[1].trim();
+                                    String gateway=columns[0].trim();
+
+                                    cnt++;
+                                    // id 가 일치하는 것이 존재 할 경우
+                                    if(id.equals(serial_second_group) || id==serial_second_group)
+                                    {
+                                        setDongleChannel(gateway);
+                                        usbDeviceManager.SecondSetting(gateway, serial_second_group);
                                     }
 
                                     // 일치하는 Serial ID 가 없을 경우

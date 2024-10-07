@@ -1,12 +1,12 @@
 package net.woorisys.lighting.control3.admin.sjp.usb.pdu.request;
 
-public class SettingPDU extends RequestPDUBase3 {
+public class SettingSecondPDU extends RequestPDUBase3 {
 
 
     String serial ="";
     String gateway="";
 
-    public SettingPDU(String Gateway,String serial) {
+    public SettingSecondPDU (String Gateway,String serial) {
         super(Gateway,"FFFF");
         System.out.println("Gateway => : "+Gateway);
 
@@ -21,7 +21,7 @@ public class SettingPDU extends RequestPDUBase3 {
 //        sb.append(SEPARATOR);
         sb.append(serial);
         sb.append(SEPARATOR);
-        sb.append(CMD_GROUP_1_SEND);
+        sb.append(CMD_GROUP_2_SEND);
         return encode(sb.toString());
     }
 }

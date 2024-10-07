@@ -3,19 +3,19 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         debug {
-            storeFile file('C:\\dev\\android_workspace\\backups\\AreaLightingController\\ictapk.jks')
+            storeFile file('C:\\Dev\\android\\ictapk.jks')
             storePassword 'v9029390'
             keyPassword 'v9029390'
             keyAlias 'key0'
         }
         release {
-            storeFile file('C:\\dev\\android_workspace\\backups\\AreaLightingController\\ictapk.jks')
+            storeFile file('C:\\Dev\\android\\ictapk.jks')
             storePassword 'v9029390'
             keyPassword 'v9029390'
             keyAlias 'key0'
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "net.woorisys.lighting.control3.AreaLighting"
         minSdkVersion 21
@@ -83,8 +83,11 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    //noinspection GradleCompatible
     implementation 'com.android.support:support-v4:28.0.0'
+    //noinspection GradleCompatible
     implementation 'com.android.support:design:28.0.0'
+    //noinspection GradleCompatible
     implementation 'com.android.support:support-vector-drawable:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

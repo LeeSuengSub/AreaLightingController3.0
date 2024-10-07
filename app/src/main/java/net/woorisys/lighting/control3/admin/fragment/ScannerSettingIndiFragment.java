@@ -54,15 +54,28 @@ public class ScannerSettingIndiFragment extends Fragment {
     @BindView(R.id.et_device_line)
     EditText etDeviceLine;
 
+    @BindView(R.id.et_device_2group_line)
+    EditText etDevice2groupLine;
+
     @BindView(R.id.btn_csv_group_check)
     Button btnCsvGroupCheck;
 
-    @BindView(R.id.btn_group_send)
+    @BindView(R.id.btn_group_second_check)
+    Button btnCsvSecondGroupCheck;
+
+    @BindView(R.id.btn_group_first_send)
     Button btnGroupSend;
-    @BindView(R.id.btn_group_check)
-    Button btnGroupCheck;
-    @BindView(R.id.btn_setting_confirm)
+
+    @BindView(R.id.btn_group_second_send)
+    Button btnSecondGroupSend;
+
+    @BindView(R.id.btn_group_first_check)
+    Button btnFirstGroupCheck;
+    @BindView(R.id.btn_setting_first_group_confirm)
     Button btnSetting;
+    @BindView(R.id.btn_setting_second_group_confirm)
+    Button btnSecondSetting;
+
     @BindView(R.id.btn_update)
     Button btnUpdate;
 
@@ -117,7 +130,7 @@ public class ScannerSettingIndiFragment extends Fragment {
 //            }
 //        });
 
-        // 그룹 전송
+        //1 그룹 전송
         btnGroupSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,9 +146,25 @@ public class ScannerSettingIndiFragment extends Fragment {
                 getActivity().sendBroadcast(intent);
             }
         });
+        //2 그룹 전송
+        btnSecondGroupSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(etAreaId.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(usbManagement.getAction_Second_Group_Setting());
+                intent.putExtra("serial", etAreaId.getText().toString());
+                intent.putExtra("line",etDevice2groupLine.getText().toString());
+                getActivity().sendBroadcast(intent);
+            }
+        });
 
         // 그룹 확인
-        btnGroupCheck.setOnClickListener(new View.OnClickListener() {
+        btnFirstGroupCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -147,6 +176,22 @@ public class ScannerSettingIndiFragment extends Fragment {
 
                 Intent intent=new Intent(usbManagement.getAction_Group_Check());
                 intent.putExtra("serial",etAreaId.getText().toString());
+                getActivity().sendBroadcast(intent);
+            }
+        });
+
+        btnCsvSecondGroupCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("SS1234","2222222222222222222222");
+                if(etAreaId.getText().toString().isEmpty())
+                {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(usbManagement.getAction_Second_Group_Check());
+                intent.putExtra("serial", etAreaId.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -164,6 +209,22 @@ public class ScannerSettingIndiFragment extends Fragment {
 
                 Intent intent=new Intent(usbManagement.getAction_Setting_Confirm());
                 intent.putExtra("serial",etAreaId.getText().toString());
+                getActivity().sendBroadcast(intent);
+            }
+        });
+
+        btnSecondSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("SS1234","3333333333333333333333");
+                if(etAreaId.getText().toString().isEmpty())
+                {
+                    Toast.makeText(getContext(),"시리얼을 입력하여 주세요",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(usbManagement.getAction_Second_Group_Setting_Confirm());
+                intent.putExtra("serial", etAreaId.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -209,6 +270,7 @@ public class ScannerSettingIndiFragment extends Fragment {
                             super.run();
 
                             int cnt=0;
+                            boolean matchFound = false;
 
                             while (true)
                             {
@@ -218,13 +280,16 @@ public class ScannerSettingIndiFragment extends Fragment {
                                     line=reader.readLine();
                                     if (line == null)
                                         break;
+
                                     String[] columns = line.split(",");
-                                    if (columns.length < 2)
+
+                                    if (columns.length < 4)
                                         continue;
 
                                     String gateway=columns[0].trim();
                                     String id = columns[1].trim();
-                                    String device_count = columns[2].trim();
+                                    String group = columns[2].trim();
+                                    String device_count = columns[3].trim();
                                     String device_list_line = line;
 
                                     //Log.d(TAG,"id : "+id);
@@ -233,29 +298,37 @@ public class ScannerSettingIndiFragment extends Fragment {
                                     // id 가 일치하는 것이 존재 할 경우
                                     if(id.equals(selAreaId) || id == selAreaId )
                                     {
-
+                                        matchFound = true;
                                         getActivity().runOnUiThread(new Runnable() {
                                             public void run() {
+                                                if(group.isEmpty()) {
+                                                    Toast.makeText(getContext(), "csv파일에 해당하는 번호가 없습니다.", Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }
                                                 etGatewayId.setText(gateway);
                                                 etGroupCount.setText(device_count);
-                                                etDeviceLine.setText(device_list_line);
+                                                if(group.equals("1")) {
+                                                    etDeviceLine.setText(device_list_line);
+                                                }
+                                                if(group.equals("2")) {
+                                                    etDevice2groupLine.setText(device_list_line);
+                                                }
+//                                                etDeviceLine.setText(device_list_line);
+//                                                etDeviceLine.append(device_list_line+"\n");
+                                                Log.d("SS1234","device_list_line : " + device_list_line);
                                             }
                                         });
-                                         break;
+
                                     }
 
-                                    // 일치하는 Serial ID 가 없을 경우
-                                    if(totalDevices==cnt)
+                                    if(!matchFound && cnt == totalDevices)
                                     {
-                                        Looper.prepare();
-                                        Handler handler=new Handler();
-                                        handler.post(new Runnable() {
+                                        getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getContext(),"일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.",Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getContext(), "일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.", Toast.LENGTH_SHORT).show();
                                             }
                                         });
-                                        Looper.loop();
                                     }
                                 } catch (IOException e) {
                                     e.printStackTrace();

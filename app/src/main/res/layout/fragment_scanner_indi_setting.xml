@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/toolbar"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:orientation="vertical"
             android:visibility="visible">
@@ -149,7 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -180,7 +180,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_weight="1"
-                android:layout_height="150dp"
+                android:layout_height="100dp"
                 android:orientation="vertical">
 
                 <EditText
@@ -193,45 +193,102 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btn_group_send"
+                    android:id="@+id/btn_group_first_send"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
 
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:textSize="20dp"
+                    android:textSize="18dp"
                     android:background="@drawable/custom_ripple_effect"
-                    android:text="그룹 전송" />
-
-                <Button
-                    android:id="@+id/btn_group_check"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:textSize="20dp"
-                    android:background="@drawable/custom_ripple_effect"
-                    android:text="그룹 확인" />
+                    android:text="1Group\n전송" />
 
                 <Button
-                    android:id="@+id/btn_setting_confirm"
+                    android:id="@+id/btn_group_first_check"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:textSize="20dp"
+                    android:textSize="18dp"
                     android:background="@drawable/custom_ripple_effect"
-                    android:text="확인" />
+                    android:text="1Group\n읽기" />
+
+                <Button
+                    android:id="@+id/btn_setting_first_group_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:textSize="18dp"
+                    android:background="@drawable/custom_ripple_effect"
+                    android:text="1Group\n확인" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="100dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_device_2group_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/copyright" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/btn_group_second_send"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:textSize="18dp"
+                    android:background="@drawable/custom_ripple_effect"
+                    android:text="2Group\n전송" />
+
+                <Button
+                    android:id="@+id/btn_group_second_check"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:textSize="18dp"
+                    android:background="@drawable/custom_ripple_effect"
+                    android:text="2 Group\n읽기" />
+
+                <Button
+                    android:id="@+id/btn_setting_second_group_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:textSize="18dp"
+                    android:background="@drawable/custom_ripple_effect"
+                    android:text="2Group\n확인" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

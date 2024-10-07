@@ -116,6 +116,10 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         intentFilter.addAction(usbManagement.getAction_Group_Check());
         intentFilter.addAction(usbManagement.getAction_Setting_Confirm());
         //intentFilter.addAction(usbManagement.getAction_Setting());
+        intentFilter.addAction(usbManagement.getAction_Second_Group_Setting_Confirm());
+        intentFilter.addAction(usbManagement.getAction_Second_Group_Check());
+        intentFilter.addAction(usbManagement.getAction_Second_Group_Setting());
+
 
         //intentFilter.addAction(usbManagement.getAction_Group_Toggle());
         intentFilter.addAction(usbManagement.getAction_Router_Rejoin());

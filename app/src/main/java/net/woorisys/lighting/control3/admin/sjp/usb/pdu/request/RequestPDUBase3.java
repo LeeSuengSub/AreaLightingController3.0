@@ -15,7 +15,11 @@ public abstract class RequestPDUBase3 extends PDU {
 
     public static final String SET_R_BLE_1_GROUP="SET_R_BLE_1_GROUP";
     public static final String GET_R_BLE_1_GROUP="GET_R_BLE_1_GROUP";
-    public static final String CMD_GROUP_SEND="CMD_GROUP_1_SEND";
+    public static final String CMD_GROUP_1_SEND="CMD_GROUP_1_SEND";
+
+    public static final String SET_R_BLE_2_GROUP="SET_R_BLE_2_GROUP";
+    public static final String GET_R_BLE_2_GROUP="GET_R_BLE_2_GROUP";
+    public static final String CMD_GROUP_2_SEND="CMD_GROUP_2_SEND";
 
     private String id;
     private String f;

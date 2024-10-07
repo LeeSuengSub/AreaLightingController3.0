@@ -20,6 +20,8 @@ import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupDeletePDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupRequestPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupRequestPDU2;
+import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupSecondRequestPDU2;
+import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupSecondSendSetting;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupSendSetting;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupToggle;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.InterruptGroupSetting;
@@ -35,6 +37,7 @@ import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.RequestPDUBase4;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.RouterRejoin;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.SectionIDPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.SettingPDU;
+import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.SettingSecondPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.response.Config2ResponsePDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.response.ConfigResponsePDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.response.GroupResponsePDU;
@@ -433,6 +436,13 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 		return  responsePDUBase.getResult();
 	}
 
+	public boolean SecondSetting(String Gateway,String Serial)
+	{
+		SettingSecondPDU pdu=new SettingSecondPDU(Gateway,Serial);
+		ResponsePDUBase responsePDUBase=sendCommand(pdu);
+		return  responsePDUBase.getResult();
+	}
+
 	public boolean GroupSendCheck(String Gateway,String Serial,String[] members,String[] type)
 	{
 		String[] groupItems = new String[members.length];
@@ -447,6 +457,24 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 		}
 
 		GroupSendSetting pdu=new GroupSendSetting(Gateway,Serial,members,type);
+		ResponsePDUBase responsePDUBase=sendCommand(pdu);
+		return responsePDUBase.getResult();
+	}
+
+	public boolean GroupSecondSendCheck(String Gateway,String Serial,String[] members,String[] type)
+	{
+		String[] groupItems = new String[members.length];
+
+		for (int i = 0; i < members.length; i++) {
+			String groupItemMac = members[i];
+			String itemId = getAddress(groupItemMac);
+			if (null == itemId)
+				return false;
+
+			groupItems[i] = itemId;
+		}
+
+		GroupSecondSendSetting pdu=new GroupSecondSendSetting(Gateway,Serial,members,type);
 		ResponsePDUBase responsePDUBase=sendCommand(pdu);
 		return responsePDUBase.getResult();
 	}
@@ -521,6 +549,13 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 		return (GroupResponsePDU2) sendCommand2(pdu);
 	}
 
+	public GroupResponsePDU2 sendGroupSecondRequest2(String GateWay,String Serial)
+	{
+		String id = Serial;
+		GroupSecondRequestPDU2 pdu = new GroupSecondRequestPDU2(GateWay,id);
+
+		return (GroupResponsePDU2) sendCommand2(pdu);
+	}
 
 	/**
 	 * 인자로 주어진 장비의 그룹 정보 삭제를 요청한다.
