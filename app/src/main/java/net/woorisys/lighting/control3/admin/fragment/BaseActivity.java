@@ -29,8 +29,6 @@ import net.woorisys.lighting.control3.admin.sjp.observer.FragmentValue;
 import net.woorisys.lighting.control3.admin.sjp.observer.ResultValue;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class BaseActivity extends AppCompatActivity implements BroadcastReceiverListener {
 
@@ -49,15 +47,10 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
 
     private final long FINISH_INTERVAL_TIME = 2000;
 
-    @BindView(R.id.page_title)
     TextView pageTitle;
-    @BindView(R.id.btn_Search)
     Button btnSearch;
-    @BindView(R.id.txt_Path)
     TextView txt_FilePath_Whole;
-    @BindView(R.id.txt_Path_)
     TextView getTxt_FilePath_Whole;
-    @BindView(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -97,7 +90,13 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
+
+        pageTitle=findViewById(R.id.page_title);
+        btnSearch=findViewById(R.id.btn_Search);
+        txt_FilePath_Whole=findViewById(R.id.txt_Path);
+        getTxt_FilePath_Whole=findViewById(R.id.txt_Path_);
+        bottomNavigationView=findViewById(R.id.bottomNavigationView);
 
         /** PSJ **/
         //region IntentFilter

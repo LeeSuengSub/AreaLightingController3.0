@@ -21,9 +21,6 @@ import net.woorisys.lighting.control3.admin.sjp.server.ServerRequestResult;
 import net.woorisys.lighting.control3.admin.sjp.sharedpreference.SharedPreferenceManage;
 import net.woorisys.lighting.control3.admin.sjp.sharedpreference.UserData;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 
 // BroadCastReceiver 로 연결 여부 확인
 // true 일 경우 연결 - 로그인 가능
@@ -34,27 +31,25 @@ public class LoginActivity extends AppCompatActivity implements ServerRequestRes
 
     InputMethodManager controlManager;
 
-    @BindView(R.id.loginForm)
     LinearLayout loginForm;
-    @BindView(R.id.loginEdits)
     LinearLayout loginEdits;
-    @BindView(R.id.light_image)
     ImageView lightImage;
-    @BindView(R.id.user_id)
     EditText userId;
-    @BindView(R.id.user_password)
     EditText userPassword;
-    @BindView(R.id.error_message)
     TextView errorMessageView;
-    @BindView(R.id.submit)
     Button submit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.bind(LoginActivity.this);
 
+        //레이아웃.
+        loginEdits = findViewById(R.id.loginEdits);
+        userId = findViewById(R.id.user_id);
+        userPassword = findViewById(R.id.user_password);
+        errorMessageView = findViewById(R.id.error_message);
+        submit = findViewById(R.id.submit);
 
 
         controlManager=(InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);

@@ -35,35 +35,19 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class ScannerSettingIndiFragment extends Fragment {
 
     //region UI
-    @BindView(R.id.page_title)
     TextView pageTitle;
-    @BindView(R.id.tv_area_id)
     TextView tvAreaId;
-    @BindView(R.id.et_gateway_id)
     EditText etGatewayId;
-    @BindView(R.id.et_group_count)
     EditText etGroupCount;
-    @BindView(R.id.et_area_id)
     EditText etAreaId;
-    @BindView(R.id.et_device_line)
     EditText etDeviceLine;
-
-    @BindView(R.id.btn_csv_group_check)
     Button btnCsvGroupCheck;
-
-    @BindView(R.id.btn_group_send)
     Button btnGroupSend;
-    @BindView(R.id.btn_group_check)
     Button btnGroupCheck;
-    @BindView(R.id.btn_setting_confirm)
     Button btnSetting;
-    @BindView(R.id.btn_update)
     Button btnUpdate;
 
 
@@ -96,7 +80,23 @@ public class ScannerSettingIndiFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scanner_indi_setting, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
+
+        //레이아웃
+        pageTitle=view.findViewById(R.id.page_title);
+        tvAreaId=view.findViewById(R.id.tv_area_id);
+        etAreaId=view.findViewById(R.id.et_area_id);
+        etGatewayId=view.findViewById(R.id.et_gateway_id);
+        etGroupCount=view.findViewById(R.id.et_group_count);
+        etDeviceLine=view.findViewById(R.id.et_device_line);
+
+        //버튼
+        btnCsvGroupCheck=view.findViewById(R.id.btn_csv_group_check);
+        btnGroupSend=view.findViewById(R.id.btn_group_send);
+        btnGroupCheck=view.findViewById(R.id.btn_group_check);
+        btnSetting=view.findViewById(R.id.btn_setting_confirm);
+        btnUpdate=view.findViewById(R.id.btn_update);
+
         pageTitle.setText("개별 구역등 설정");
 
         // 채널 변경

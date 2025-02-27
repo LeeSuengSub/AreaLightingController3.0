@@ -18,32 +18,17 @@ import net.woorisys.lighting.control3.admin.R;
 import net.woorisys.lighting.control3.admin.sjp.EditTextErrorCheck;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ScannerSettingFragment extends Fragment {
 
     //region UI
-    @BindView(R.id.page_title)
     TextView pageTitle;
-
-
-    @BindView(R.id.btn_group_send)
     Button Btn_Group_Send;
-    @BindView(R.id.btn_group_check)
     Button Btn_Group_Check;
-    @BindView(R.id.btn_setting_confirm)
     Button Btn_Setting;
-
-//    @BindView(R.id.btn_Group_Togle)
 //    Button Btn_Group_Togle;
-    @BindView(R.id.btn_Router_Rejoin)
     Button Btn_Router_Rejoin;
-
-    @BindView(R.id.btn_Gateway_Rejoin)
     Button Btn_Gateway_Rejoin;
-
-    @BindView(R.id.et_Serial)
     EditText ET_Serial;
 
     private final static String TAG="SJP_DIMMING_TAG";  //  Dimming Setting Fragment Tag
@@ -70,7 +55,19 @@ public class ScannerSettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scanner_setting, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
+
+        //레이아웃
+        pageTitle=view.findViewById(R.id.page_title);
+        ET_Serial=view.findViewById(R.id.et_Serial);
+
+        //버튼
+        Btn_Group_Send=view.findViewById(R.id.btn_group_send);
+        Btn_Group_Check=view.findViewById(R.id.btn_group_check);
+        Btn_Setting=view.findViewById(R.id.btn_setting_confirm);
+        Btn_Router_Rejoin=view.findViewById(R.id.btn_Router_Rejoin);
+        Btn_Gateway_Rejoin=view.findViewById(R.id.btn_Gateway_Rejoin);
+
         pageTitle.setText("구역등 설정");
 
         // 채널 변경

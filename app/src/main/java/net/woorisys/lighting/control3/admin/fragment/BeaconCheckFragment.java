@@ -34,30 +34,21 @@ import org.altbeacon.beacon.service.scanner.ScanFilterUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class BeaconCheckFragment extends Fragment {
 
     //region UI
-    @BindView(R.id.page_title)
     TextView pageTitle;
-
-    @BindView(R.id.btn_beacon_clear)
     Button Btn_Beacon_Clear;
-
-    @BindView(R.id.et_beacon_uuid)
     EditText ET_Beacon_Uuid;
-
-    @BindView(R.id.txt_beacon_scan_result)
     TextView Txt_Beacon_Scan_Result;
 
-    @BindView(R.id.Cb_beacon_1) CheckBox Cb_Beacon_1;
-    @BindView(R.id.Cb_beacon_2) CheckBox Cb_Beacon_2;
-    @BindView(R.id.Cb_beacon_3) CheckBox Cb_Beacon_3;
-    @BindView(R.id.Cb_beacon_4) CheckBox Cb_Beacon_4;
-    @BindView(R.id.Cb_beacon_5) CheckBox Cb_Beacon_5;
-    @BindView(R.id.Cb_beacon_6) CheckBox Cb_Beacon_6;
+    CheckBox Cb_Beacon_1;
+    CheckBox Cb_Beacon_2;
+    CheckBox Cb_Beacon_3;
+    CheckBox Cb_Beacon_4;
+    CheckBox Cb_Beacon_5;
+    CheckBox Cb_Beacon_6;
 
     private final static String TAG="BEACON_SCAN";  //  Dimming Setting Fragment Tag
 
@@ -97,7 +88,22 @@ public class BeaconCheckFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_beaconr_check, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
+
+        //레이아웃
+        pageTitle=view.findViewById(R.id.page_title);
+        Btn_Beacon_Clear=view.findViewById(R.id.btn_beacon_clear);
+        ET_Beacon_Uuid=view.findViewById(R.id.et_beacon_uuid);
+        Txt_Beacon_Scan_Result=view.findViewById(R.id.txt_beacon_scan_result);
+
+        //체크박스
+        Cb_Beacon_1=view.findViewById(R.id.Cb_beacon_1);
+        Cb_Beacon_2=view.findViewById(R.id.Cb_beacon_2);
+        Cb_Beacon_3=view.findViewById(R.id.Cb_beacon_3);
+        Cb_Beacon_4=view.findViewById(R.id.Cb_beacon_4);
+        Cb_Beacon_5=view.findViewById(R.id.Cb_beacon_5);
+        Cb_Beacon_6=view.findViewById(R.id.Cb_beacon_6);
+
         pageTitle.setText("비컨 스켄 설정");
 
 //        sharedPreferencesSingleton=SharedPreferencesSingleton.getInstance(getApplicationContext());

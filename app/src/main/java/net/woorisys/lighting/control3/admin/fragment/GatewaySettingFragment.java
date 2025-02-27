@@ -34,42 +34,25 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class GatewaySettingFragment extends Fragment {
 
     private final static String TAG="GATEWAY";  //
 
     //region UI
-    @BindView(R.id.page_title)
     TextView pageTitle;
-
-    @BindView(R.id.et_device_id)
     EditText etGatewayId;
-    @BindView(R.id.et_gateway_mac)
     EditText etGatewayMac;
-    @BindView(R.id.et_gateway_ip)
     EditText etGatewayIp;
-    @BindView(R.id.et_server_ip)
     EditText etServerIp;
-    @BindView(R.id.et_server_port)
     EditText etServerPort;
-    @BindView(R.id.et_subnet_ip)
     EditText etSubnetIp;
-    @BindView(R.id.et_server_gateway_ip)
     EditText etServerGatewayIp;
-    @BindView(R.id.et_device_line)
     EditText etDeviceLine;
 
-    @BindView(R.id.btn_csv_device_check)
     Button btnCsvDeviceCheck;
-    @BindView(R.id.btn_gw_setting_Send)
     Button btnGwSettingSend;
-    @BindView(R.id.btn_gw_setting_check)
     Button btnGwSettingCheck;
-
-    @BindView(R.id.btn_update)
     Button btnUpdate;
 
     private int totalDevices = 0;
@@ -93,7 +76,26 @@ public class GatewaySettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gateway_setting, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
+
+        //레이아웃
+        pageTitle=view.findViewById(R.id.page_title);
+        etGatewayId=view.findViewById(R.id.et_device_id);
+        etGatewayMac=view.findViewById(R.id.et_gateway_mac);
+        etGatewayIp=view.findViewById(R.id.et_gateway_ip);
+        etServerIp=view.findViewById(R.id.et_server_ip);
+        etServerPort=view.findViewById(R.id.et_server_port);
+        etSubnetIp=view.findViewById(R.id.et_subnet_ip);
+        etServerGatewayIp=view.findViewById(R.id.et_server_gateway_ip);
+        etDeviceLine=view.findViewById(R.id.et_device_line);
+
+        //버튼
+        btnCsvDeviceCheck=view.findViewById(R.id.btn_csv_device_check);
+        btnGwSettingSend=view.findViewById(R.id.btn_gw_setting_Send);
+        btnGwSettingCheck=view.findViewById(R.id.btn_gw_setting_check);
+        btnUpdate=view.findViewById(R.id.btn_update);
+
+
         pageTitle.setText("게이트웨이 설정");
 
         // 게이트웨이 셋팅 전송

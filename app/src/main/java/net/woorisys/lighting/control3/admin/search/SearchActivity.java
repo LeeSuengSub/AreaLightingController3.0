@@ -32,21 +32,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class SearchActivity extends AppCompatActivity {
 
     private final static String TAG="SJP_SearchActivity_TAG";
     private File file;
 
-    @BindView(R.id.page_title)
     TextView pageTitle;
-
-    @BindView(R.id.search_edit)
     AutoCompleteTextView search_edit;
-
-    @BindView(R.id.btn_refresh_list)
     Button btn_refresh;
 
     ContentSearchBinding binding;
@@ -60,9 +52,13 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_search);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
         binding = DataBindingUtil.setContentView(this, R.layout.content_search);
         binding.setActivity(this);
+
+        pageTitle=findViewById(R.id.page_title);
+        search_edit=findViewById(R.id.search_edit);
+        btn_refresh=findViewById(R.id.btn_refresh_list);
 
         pageTitle.setText("CSV 목록");
 
