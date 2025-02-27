@@ -6,6 +6,7 @@
     <string name="gateway_setting">게이트웨이 설정</string>
     <string name="beacon_check">비컨 확인</string>
     <string name="csv_group_setting">CSV 그룹 설정</string>
+    <string name="version">ver.250227</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
