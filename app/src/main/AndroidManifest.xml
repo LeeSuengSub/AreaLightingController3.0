@@ -39,6 +39,7 @@
 
         <activity
             android:name="net.woorisys.lighting.control3.admin.MainActivity"
+            android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
