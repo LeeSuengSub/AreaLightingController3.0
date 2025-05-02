@@ -1,24 +1,27 @@
 package net.woorisys.lighting.control3.admin.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import net.woorisys.lighting.control3.admin.R;
 import net.woorisys.lighting.control3.admin.search.SearchActivity;
@@ -200,7 +203,13 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         {
             broadcastReceiver=new usbManagement();
             broadcastReceiver.setListener(this);
-            registerReceiver(broadcastReceiver,intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                super.registerReceiver(broadcastReceiver,intentFilter, Context.RECEIVER_EXPORTED);
+            } else {
+
+                super.registerReceiver(broadcastReceiver,intentFilter);
+            }
+
         }
     }
 

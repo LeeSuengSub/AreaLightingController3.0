@@ -1,15 +1,18 @@
 package net.woorisys.lighting.control3.admin.search;
 
 import android.Manifest;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,6 +23,15 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.documentfile.provider.DocumentFile;
 
 import net.woorisys.lighting.control3.admin.R;
 import net.woorisys.lighting.control3.admin.common.AbsractCommonAdapter;
@@ -29,12 +41,15 @@ import net.woorisys.lighting.control3.admin.domain.Temp;
 import net.woorisys.lighting.control3.admin.sjp.RememberData;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
     private final static String TAG="SJP_SearchActivity_TAG";
+    private static final int REQUEST_CODE_OPEN_DOWNLOAD_FOLDER = 100;
     private File file;
 
     TextView pageTitle;
@@ -47,6 +62,8 @@ public class SearchActivity extends AppCompatActivity {
 
     List<Temp> list ;
     List<String> searchlist;
+
+    Uri treeUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,18 +79,10 @@ public class SearchActivity extends AppCompatActivity {
 
         pageTitle.setText("CSV 목록");
 
-        file=new File(Environment.getExternalStorageDirectory(),"Area_Group");
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        startActivityForResult(intent, REQUEST_CODE_OPEN_DOWNLOAD_FOLDER);
 
-        if (ContextCompat.checkSelfPermission(SearchActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(SearchActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
-        }
-        else
-        {
-            CreateDirectory();
-        }
+
 
         btn_refresh=findViewById(R.id.btn_refresh_list);
         btn_refresh.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +95,36 @@ public class SearchActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_OPEN_DOWNLOAD_FOLDER && resultCode == RESULT_OK) {
+            treeUri = data.getData();
+
+            if (!hasUriPermission(this, treeUri)) {
+                getContentResolver().takePersistableUriPermission(
+                        treeUri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                );
+                Log.d("SAF", "새로운 권한 획득: " + treeUri.toString());
+            } else {
+                Log.d("SAF", "이미 권한 보유: " + treeUri.toString());
+            }
+            CreateDirectory();
+        }
+    }
+
+    private boolean hasUriPermission(Context context, Uri treeUri) {
+        List<UriPermission> permissions = context.getContentResolver().getPersistedUriPermissions();
+        for (UriPermission permission : permissions) {
+            if (permission.getUri().equals(treeUri) && permission.isReadPermission() && permission.isWritePermission()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // 해당 파일 안에 있는 .xml 파일을 불러온다.
     private void Additem()
@@ -137,9 +176,6 @@ public class SearchActivity extends AppCompatActivity {
     // 해당 파일을 생성
     private void CreateDirectory()
     {
-        if(!DirectoryCheck())
-            file.mkdir();
-
         ReadDirectory();
         Additem();
         setAutoSearch();
@@ -157,19 +193,29 @@ public class SearchActivity extends AppCompatActivity {
 
     private void ReadDirectory()
     {
-        File[] files=file.listFiles();
         list = new ArrayList<Temp>();
         searchlist=new ArrayList<>();
+        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
 
-        for(File file : files)
-        {
-            if(file.getName().toLowerCase().endsWith(".csv"))
-            {
-                Log.d(TAG,"FILE NAME : "+file.getName());
-                list.add(new Temp(file.getName()));
-                searchlist.add(file.getName());
+        if (pickedDir != null && pickedDir.isDirectory()) {
+            DocumentFile[] files = pickedDir.listFiles();
+
+            for (DocumentFile file : files) {
+                if (file.isFile()) {
+                    String fileName = file.getName();  // ✅ 파일 이름 가져오기
+                    Log.d("FileList", "파일 이름: " + fileName);
+                    if(file.getName().toLowerCase().endsWith(".csv"))
+                    {
+                        Log.d(TAG,"FILE NAME : "+file.getName());
+                        list.add(new Temp(file.getName()));
+                        searchlist.add(file.getName());
+                    }
+                }
             }
+        } else {
+            Log.e("FileList", "유효한 폴더가 아닙니다.");
         }
+
     }
 
     private void ResetListVIew()
@@ -179,23 +225,6 @@ public class SearchActivity extends AppCompatActivity {
         binding.searchResultListview.setAdapter(tempAdapter);
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d(TAG,"PERMISSION CODE : "+requestCode+" / "+permissions);
-
-        if(requestCode==1)
-        {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                CreateDirectory();
-
-            } else {
-                this.finish();
-            }
-        }
-    }
 
     private void setAutoSearch()
     {

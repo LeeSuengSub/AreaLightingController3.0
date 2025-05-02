@@ -1,5 +1,6 @@
 package net.woorisys.lighting.control3.admin.fragment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -12,10 +13,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -50,13 +55,13 @@ public class BeaconCheckFragment extends Fragment {
     CheckBox Cb_Beacon_5;
     CheckBox Cb_Beacon_6;
 
-    private final static String TAG="BEACON_SCAN";  //  Dimming Setting Fragment Tag
+    private final static String TAG = "BEACON_SCAN";  //  Dimming Setting Fragment Tag
 
-    private boolean isStartScanning=false;
+    private boolean isStartScanning = false;
 
     private BeaconParser beaconParser;
     private List<BeaconParser> beaconParsers;
-    private ScanFilterUtils scanFilterUtils=new ScanFilterUtils();
+    private ScanFilterUtils scanFilterUtils = new ScanFilterUtils();
     private ScanSettings settings;
     List<ScanFilter> filters;
     BluetoothAdapter mBluetoothAdapter;
@@ -66,7 +71,7 @@ public class BeaconCheckFragment extends Fragment {
 
     private BLEBroadcastReceiver mBroadcastReceiver = null;
 
-    private String recvMsg=null;
+    private String recvMsg = null;
 
     // 생성자
     public BeaconCheckFragment() {
@@ -76,6 +81,7 @@ public class BeaconCheckFragment extends Fragment {
     public static BeaconCheckFragment newInstance() {
         return new BeaconCheckFragment();
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,18 +97,18 @@ public class BeaconCheckFragment extends Fragment {
 //        ButterKnife.bind(this, view);
 
         //레이아웃
-        pageTitle=view.findViewById(R.id.page_title);
-        Btn_Beacon_Clear=view.findViewById(R.id.btn_beacon_clear);
-        ET_Beacon_Uuid=view.findViewById(R.id.et_beacon_uuid);
-        Txt_Beacon_Scan_Result=view.findViewById(R.id.txt_beacon_scan_result);
+        pageTitle = view.findViewById(R.id.page_title);
+        Btn_Beacon_Clear = view.findViewById(R.id.btn_beacon_clear);
+        ET_Beacon_Uuid = view.findViewById(R.id.et_beacon_uuid);
+        Txt_Beacon_Scan_Result = view.findViewById(R.id.txt_beacon_scan_result);
 
         //체크박스
-        Cb_Beacon_1=view.findViewById(R.id.Cb_beacon_1);
-        Cb_Beacon_2=view.findViewById(R.id.Cb_beacon_2);
-        Cb_Beacon_3=view.findViewById(R.id.Cb_beacon_3);
-        Cb_Beacon_4=view.findViewById(R.id.Cb_beacon_4);
-        Cb_Beacon_5=view.findViewById(R.id.Cb_beacon_5);
-        Cb_Beacon_6=view.findViewById(R.id.Cb_beacon_6);
+        Cb_Beacon_1 = view.findViewById(R.id.Cb_beacon_1);
+        Cb_Beacon_2 = view.findViewById(R.id.Cb_beacon_2);
+        Cb_Beacon_3 = view.findViewById(R.id.Cb_beacon_3);
+        Cb_Beacon_4 = view.findViewById(R.id.Cb_beacon_4);
+        Cb_Beacon_5 = view.findViewById(R.id.Cb_beacon_5);
+        Cb_Beacon_6 = view.findViewById(R.id.Cb_beacon_6);
 
         pageTitle.setText("비컨 스켄 설정");
 
@@ -116,16 +122,16 @@ public class BeaconCheckFragment extends Fragment {
 //
 //        sharedPreferencesSingleton.ResetUpdate(sharedPreferencesSingleton.getRESET_W()+1);
 
-        mBluetoothAdapter= BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        beaconParser=new BeaconParser();
+        beaconParser = new BeaconParser();
         beaconParser.setBeaconLayout(getResources().getString(R.string.beacon_parser));
-        beaconParsers=new ArrayList<>();
+        beaconParsers = new ArrayList<>();
         beaconParsers.add(beaconParser);
-        settings=(new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();      //  RequiresApi 가 필요 - Oreo 버전에서만 사용할 예정이기 때문에 Oreo 만 잡아준다
-        filters=scanFilterUtils.createScanFiltersForBeaconParsers(beaconParsers);
+        settings = (new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();      //  RequiresApi 가 필요 - Oreo 버전에서만 사용할 예정이기 때문에 Oreo 만 잡아준다
+        filters = scanFilterUtils.createScanFiltersForBeaconParsers(beaconParsers);
 
-        LeScanner_W=mBluetoothAdapter.getBluetoothLeScanner();
+        LeScanner_W = mBluetoothAdapter.getBluetoothLeScanner();
 
         mScanCallback = new BLEScanCallback();
 
@@ -162,28 +168,26 @@ public class BeaconCheckFragment extends Fragment {
             SparseArray<byte[]> sparseArray = scanRecord.getManufacturerSpecificData();
             byte[] bytevalue = sparseArray.valueAt(0);
 
-            if(bytevalue!=null)
-            {
-                if(bytevalue.length>=23) {
+            if (bytevalue != null) {
+                if (bytevalue.length >= 23) {
                     //Log.d(TAG,"byteValue SIZE : "+bytevalue.length);
-                    String Address= String.format("%02x", bytevalue[2] & 0xff) + String.format("%02x", bytevalue[3] & 0xff)
-                            + String.format("%02x", bytevalue[4] & 0xff)+ String.format("%02x", bytevalue[5] & 0xff)
-                            + String.format("%02x", bytevalue[6] & 0xff)+ String.format("%02x", bytevalue[7] & 0xff)
-                            + String.format("%02x", bytevalue[8] & 0xff)+ String.format("%02x", bytevalue[9] & 0xff)
-                            + String.format("%02x", bytevalue[10] & 0xff)+ String.format("%02x", bytevalue[11] & 0xff)
-                            + String.format("%02x", bytevalue[12] & 0xff)+ String.format("%02x", bytevalue[13] & 0xff)
-                            + String.format("%02x", bytevalue[14] & 0xff)+ String.format("%02x", bytevalue[15] & 0xff)
-                            + String.format("%02x", bytevalue[16] & 0xff)+ String.format("%02x", bytevalue[17] & 0xff);
+                    String Address = String.format("%02x", bytevalue[2] & 0xff) + String.format("%02x", bytevalue[3] & 0xff)
+                            + String.format("%02x", bytevalue[4] & 0xff) + String.format("%02x", bytevalue[5] & 0xff)
+                            + String.format("%02x", bytevalue[6] & 0xff) + String.format("%02x", bytevalue[7] & 0xff)
+                            + String.format("%02x", bytevalue[8] & 0xff) + String.format("%02x", bytevalue[9] & 0xff)
+                            + String.format("%02x", bytevalue[10] & 0xff) + String.format("%02x", bytevalue[11] & 0xff)
+                            + String.format("%02x", bytevalue[12] & 0xff) + String.format("%02x", bytevalue[13] & 0xff)
+                            + String.format("%02x", bytevalue[14] & 0xff) + String.format("%02x", bytevalue[15] & 0xff)
+                            + String.format("%02x", bytevalue[16] & 0xff) + String.format("%02x", bytevalue[17] & 0xff);
 
                     //if(Address==getResources().getString(R.string.beacon_id) || Address.equals(getResources().getString(R.string.beacon_id)))
-                    if(Address==ET_Beacon_Uuid.getText().toString() || Address.equals(ET_Beacon_Uuid.getText().toString()))
-                    {
+                    if (Address == ET_Beacon_Uuid.getText().toString() || Address.equals(ET_Beacon_Uuid.getText().toString())) {
                         final double rssi = result.getRssi();
-                        String MajorValue= String.format("%02X",bytevalue[18])+ String.format("%02X",bytevalue[19]);
-                        String MinorValue= String.format("%02X",bytevalue[20])+ String.format("%02X",bytevalue[21]);
+                        String MajorValue = String.format("%02X", bytevalue[18]) + String.format("%02X", bytevalue[19]);
+                        String MinorValue = String.format("%02X", bytevalue[20]) + String.format("%02X", bytevalue[21]);
 
-                        final int major = Integer.valueOf(MajorValue,16);
-                        int minor = Integer.valueOf(MinorValue,16);
+                        final int major = Integer.valueOf(MajorValue, 16);
+                        int minor = Integer.valueOf(MinorValue, 16);
 
                         try {
                             if (rssi >= -90) {
@@ -254,8 +258,8 @@ public class BeaconCheckFragment extends Fragment {
                                         break;
                                 }
                             }
-                        }catch (Exception e){
-                            Log.d(TAG,"Scanning Stop");
+                        } catch (Exception e) {
+                            Log.d(TAG, "Scanning Stop");
                         }
                     }
                 }
@@ -265,7 +269,7 @@ public class BeaconCheckFragment extends Fragment {
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
-            Log.d(TAG,"ERROR : "+errorCode);
+            Log.d(TAG, "ERROR : " + errorCode);
 
             //LeScanner_W.stopScan(scanCallback);
             //LeScanner_W.startScan(scanCallback);
@@ -274,28 +278,42 @@ public class BeaconCheckFragment extends Fragment {
 
     // Bluetooth Low Energy Scanning Start
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void StartBluetoothScanning()
-    {
-        if(!isStartScanning)
-        {
-            if(LeScanner_W!=null)
-            {
-                Log.d(TAG,"START LOW ENERGY SCANNING");
-                LeScanner_W.startScan(filters,settings,mScanCallback);
-                isStartScanning=true;
+    private void StartBluetoothScanning() {
+        if (!isStartScanning) {
+            if (LeScanner_W != null) {
+                Log.d(TAG, "START LOW ENERGY SCANNING");
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                LeScanner_W.startScan(filters, settings, mScanCallback);
+                isStartScanning = true;
             }
         }
     }
 
     // Bluetooth Low Energy Scanning Stop
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void StopBluetoothScanning()
-    {
-        if(isStartScanning)
-        {
-            if(LeScanner_W!=null)
-            {
-                Log.d(TAG,"STOP LOW ENERGY SCANNING");
+    private void StopBluetoothScanning() {
+        if (isStartScanning) {
+            if (LeScanner_W != null) {
+                Log.d(TAG, "STOP LOW ENERGY SCANNING");
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 LeScanner_W.stopScan(mScanCallback);
                 isStartScanning=false;
             }
