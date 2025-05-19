@@ -65,6 +65,8 @@ public class SearchActivity extends AppCompatActivity {
 
     Uri treeUri;
 
+    public static Uri DefaultUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +104,11 @@ public class SearchActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_OPEN_DOWNLOAD_FOLDER && resultCode == RESULT_OK) {
             treeUri = data.getData();
 
+            if(treeUri == null) {
+                Log.e(TAG, "트리 URI가 null입니다.");
+                return;
+            }
+
             if (!hasUriPermission(this, treeUri)) {
                 getContentResolver().takePersistableUriPermission(
                         treeUri,
@@ -111,6 +118,20 @@ public class SearchActivity extends AppCompatActivity {
             } else {
                 Log.d("SAF", "이미 권한 보유: " + treeUri.toString());
             }
+
+            // 폴더 내부 CSV 파일 중 첫 번째 URI를 DefaultUri로 저장
+            DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+            if (pickedDir != null && pickedDir.isDirectory()) {
+                for (DocumentFile file : pickedDir.listFiles()) {
+                    if (file.isFile() && file.getName().toLowerCase().endsWith(".csv")) {
+                        DefaultUri = file.getUri(); // ✅ 여기에 저장
+                        Log.d(TAG, "DefaultUri 설정됨: " + DefaultUri);
+                        Log.d(TAG, "DefaultUri set to file: " + file.getName() + " | URI: " + DefaultUri);
+                        break;
+                    }
+                }
+            }
+
             CreateDirectory();
         }
     }
@@ -150,13 +171,32 @@ public class SearchActivity extends AppCompatActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        File combinefile=new File(file,list.get(position).getText());
-                        Log.d(TAG,"SELECT : " +combinefile);
+//                        File combinefile=new File(file,list.get(position).getText());
+//                        Log.d(TAG,"SELECT : " +combinefile);
+//                        RememberData.getInstance().setSavefilepath(combinefile);
+//
+//                        Intent intent=new Intent();
+//                        setResult(RESULT_OK,intent);
+//
+//                        finish();
+
+                        // 여기에 선택한 파일 이름으로 DefaultUri 업데이트
+                        DocumentFile pickedDir = DocumentFile.fromTreeUri(SearchActivity.this, treeUri);
+                        if (pickedDir != null && pickedDir.isDirectory()) {
+                            for (DocumentFile file : pickedDir.listFiles()) {
+                                if (file.isFile() && file.getName().equals(list.get(position).getText())) {
+                                    DefaultUri = file.getUri();
+                                    Log.d(TAG, "선택된 파일 URI로 DefaultUri 설정: " + DefaultUri);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // 이후 처리
+                        File combinefile = new File(file, list.get(position).getText());
                         RememberData.getInstance().setSavefilepath(combinefile);
-
-                        Intent intent=new Intent();
-                        setResult(RESULT_OK,intent);
-
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
                         finish();
                     }
                 });

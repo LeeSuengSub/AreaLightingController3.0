@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.woorisys.lighting.control3.admin.R;
+import net.woorisys.lighting.control3.admin.search.SearchActivity;
 import net.woorisys.lighting.control3.admin.sjp.EditTextErrorCheck;
 import net.woorisys.lighting.control3.admin.sjp.RememberData;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
@@ -31,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStreamWriter;
@@ -200,8 +202,13 @@ public class ScannerSettingIndiFragment extends Fragment {
                 Log.d(TAG,"total Device count : "+totalDevices);
 
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+//                    InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
+//                    BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));
+
+//                    FileInputStream in=new FileInputStream(path);
+                    Log.d("디버그", "DefaultUri: " + SearchActivity.DefaultUri.toString());
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
@@ -213,9 +220,9 @@ public class ScannerSettingIndiFragment extends Fragment {
                             while (true)
                             {
                                 String line;
-
                                 try {
                                     line=reader.readLine();
+                                    Log.d("ss1234","line  : "+line);
                                     if (line == null)
                                         break;
                                     String[] columns = line.split(",");
@@ -265,7 +272,7 @@ public class ScannerSettingIndiFragment extends Fragment {
                         }
                     }.start();
 
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
