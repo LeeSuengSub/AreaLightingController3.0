@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import net.woorisys.lighting.control3.admin.search.SearchActivity;
 import net.woorisys.lighting.control3.admin.sjp.observer.BroadcastReceiverListener;
 import net.woorisys.lighting.control3.admin.sjp.observer.FragmentValue;
 import net.woorisys.lighting.control3.admin.sjp.usb.DefaultUSBDeviceManager;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -132,8 +134,11 @@ public class usbManagement extends BroadcastReceiver {
                     return;
                 }
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+//                    FileInputStream in=new FileInputStream(path);
+//                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    InputStream inputStream = context.getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
@@ -248,8 +253,11 @@ public class usbManagement extends BroadcastReceiver {
                     return;
                 }
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+//                    FileInputStream in=new FileInputStream(path);
+//                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    InputStream inputStream = context.getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
@@ -382,8 +390,11 @@ public class usbManagement extends BroadcastReceiver {
                     return;
                 }
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+//                    FileInputStream in=new FileInputStream(path);
+//                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    InputStream inputStream = context.getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
@@ -583,8 +594,11 @@ public class usbManagement extends BroadcastReceiver {
                     return;
                 }
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+//                    FileInputStream in=new FileInputStream(path);
+//                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+
+                    InputStream inputStream = context.getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
