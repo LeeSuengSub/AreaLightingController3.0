@@ -19,6 +19,7 @@ import net.woorisys.lighting.control3.admin.sjp.usb.DefaultUSBDeviceManager;
 import net.woorisys.lighting.control3.admin.sjp.usb.SerialSettings;
 import net.woorisys.lighting.control3.admin.sjp.usb.USBTerminalException;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.response.GroupResponsePDU2;
+import net.woorisys.lighting.control3.admin.sjp.usb.util.NumberUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -296,19 +298,21 @@ public class usbManagement extends BroadcastReceiver {
                                             {
                                                 String [] parsing=groupRes.getRawContent().split(",");
                                                 String Count=parsing[1];
-                                                String Group="그룹 : ";for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
-                                                {
-                                                    Log.d(TAG,"PDU ITEM : "+parsing[i]);
-                                                    Group+=parsing[i];
+                                                String temp = String.join(",", Arrays.copyOfRange(parsing, 2, parsing.length));
+//                                                String Group="그룹 : ";for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
+//                                                {
+//                                                    Log.d(TAG,"PDU ITEM : "+parsing[i]);
+//                                                    Group+=parsing[i]; //ss1234
+//
+//                                                    if(i!=Integer.valueOf(Count)*2+1)
+//                                                    {
+//                                                        Group+=",";
+//                                                    }
+//                                                }
 
-                                                    if(i!=Integer.valueOf(Count)*2+1)
-                                                    {
-                                                        Group+=",";
-                                                    }
-                                                }
-
-                                                String Result=" 전체 그룹 갯수 : "+Count+"\n"+Group;
+                                                String Result=" 전체 그룹 갯수 : "+Count+"\n그룹 : "+temp;
                                                 Log.d(TAG,"PDU RESULT : "+Result);
+                                                Log.d("ss1234", temp);
 
                                                 Looper.prepare();
                                                 Handler handler=new Handler();
@@ -795,6 +799,20 @@ public class usbManagement extends BroadcastReceiver {
         }else if(id.equals("5016") ||  id.equals("5032") ||  id.equals("5048")){
             usbDeviceManager.ChannelChange("26");
         }
+    }
+
+    private String getAddress(String mac) {
+        System.out.println("mac ===> " + mac);
+        mac = NumberUtil.convert2Hex(mac);
+        if (mac.length() < 4) {
+            System.out.println("Invalid mac address '" + mac + "'");
+            return null;
+        }
+
+        String id = mac.substring(mac.length() - 4);
+        System.out.println("Device id is '" + id + "'");
+
+        return id;
     }
 
     @Setter

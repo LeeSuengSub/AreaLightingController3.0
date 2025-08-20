@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 
@@ -380,22 +381,24 @@ public class GatewaySettingFragment extends Fragment {
                 }
 
                 File path = RememberData.getInstance().getSavefilepath();
-                File newFile = new File(Environment.getExternalStorageDirectory(),"Area_Group/new1.csv");
 
-//                Log.d(TAG,"path : "+path);
-//                Log.d(TAG,"path1 : "+newFile);
+                // ⚠️ 기존 문제 경로 제거 → 앱 전용 경로 사용
+                File dir = requireContext().getExternalFilesDir("Area_Group");
+                if (dir != null && !dir.exists()) {
+                    dir.mkdirs();
+                }
+                File newFile = new File(dir, "new1.csv");
 
-                if(path.toString()=="NULL")
-                {
-                    Toast.makeText(getContext(),"수정할 파일이 선택되어 있지 않습니다.",Toast.LENGTH_SHORT).show();
+                if (path == null || path.toString().equals("NULL")) {
+                    Toast.makeText(getContext(), "수정할 파일이 선택되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 try {
-                    FileInputStream in = new FileInputStream(path);
-                    FileOutputStream out = new FileOutputStream(newFile, false);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    OutputStream outputStream = new FileOutputStream(newFile, false);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
                     new Thread(){
                         @Override
@@ -463,20 +466,16 @@ public class GatewaySettingFragment extends Fragment {
                             }
                             try {
                                 writer.close();
-                                out.close();
+                                outputStream.close();
                                 reader.close();
-                                in.close();
+                                inputStream.close();
                                 getActivity().runOnUiThread(new Runnable() {
                                     public void run() {
                                         Toast.makeText(getContext(),"저장 되었습니다.",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 //파일 덮어쓰기
-                                if(newFile.renameTo(path)){
-                                    Log.d(TAG," 파일 이름변경 성공");
-                                }else{
-                                    Log.d(TAG," 파일 이름변경 실패");
-                                }
+                                overwriteFile(newFile, SearchActivity.DefaultUri);
 
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -492,6 +491,32 @@ public class GatewaySettingFragment extends Fragment {
         return view;
     }
 
+    private void overwriteFile(File sourceFile, Uri targetUri) {
+        try {
+            InputStream in = new FileInputStream(sourceFile);
+            OutputStream out = requireContext().getContentResolver().openOutputStream(targetUri, "rwt"); // "rwt" = read/write/truncate
+
+            if (out == null) {
+                Log.e(TAG, "OutputStream is null. Cannot overwrite.");
+                return;
+            }
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = in.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
+            }
+
+            in.close();
+            out.flush();
+            out.close();
+
+            Log.d(TAG, "✅ SAF 파일 덮어쓰기 성공");
+
+        } catch (IOException e) {
+            Log.e(TAG, "❌ SAF 파일 덮어쓰기 실패", e);
+        }
+    }
 
     public static int countLines(File aFile) throws IOException {
         LineNumberReader reader = null;
