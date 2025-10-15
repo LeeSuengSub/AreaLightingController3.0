@@ -2,13 +2,14 @@ package net.woorisys.lighting.control3.admin.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.woorisys.lighting.control3.admin.R;
+import net.woorisys.lighting.control3.admin.search.SearchActivity;
 import net.woorisys.lighting.control3.admin.sjp.EditTextErrorCheck;
 import net.woorisys.lighting.control3.admin.sjp.RememberData;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
@@ -31,52 +33,51 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ScannerSettingIndiFragment extends Fragment {
 
     //region UI
-    @BindView(R.id.page_title)
+//    @BindView(R.id.page_title)
     TextView pageTitle;
-    @BindView(R.id.tv_area_id)
+//    @BindView(R.id.tv_area_id)
     TextView tvAreaId;
-    @BindView(R.id.et_gateway_id)
+//    @BindView(R.id.et_gateway_id)
     EditText etGatewayId;
-    @BindView(R.id.et_group_count)
+//    @BindView(R.id.et_group_count)
     EditText etGroupCount;
-    @BindView(R.id.et_area_id)
+//    @BindView(R.id.et_area_id)
     EditText etAreaId;
-    @BindView(R.id.et_device_line)
+//    @BindView(R.id.et_device_line)
     EditText etDeviceLine;
 
-    @BindView(R.id.et_device_2group_line)
+//    @BindView(R.id.et_device_2group_line)
     EditText etDevice2groupLine;
 
-    @BindView(R.id.btn_csv_group_check)
+//    @BindView(R.id.btn_csv_group_check)
     Button btnCsvGroupCheck;
 
-    @BindView(R.id.btn_group_second_check)
+//    @BindView(R.id.btn_group_second_check)
     Button btnCsvSecondGroupCheck;
 
-    @BindView(R.id.btn_group_first_send)
+//    @BindView(R.id.btn_group_first_send)
     Button btnGroupSend;
 
-    @BindView(R.id.btn_group_second_send)
+//    @BindView(R.id.btn_group_second_send)
     Button btnSecondGroupSend;
 
-    @BindView(R.id.btn_group_first_check)
+//    @BindView(R.id.btn_group_first_check)
     Button btnFirstGroupCheck;
-    @BindView(R.id.btn_setting_first_group_confirm)
+//    @BindView(R.id.btn_setting_first_group_confirm)
     Button btnSetting;
-    @BindView(R.id.btn_setting_second_group_confirm)
+//    @BindView(R.id.btn_setting_second_group_confirm)
     Button btnSecondSetting;
 
-    @BindView(R.id.btn_update)
+//    @BindView(R.id.btn_update)
     Button btnUpdate;
 
 
@@ -109,7 +110,24 @@ public class ScannerSettingIndiFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scanner_indi_setting, container, false);
-        ButterKnife.bind(this, view);
+//        ButterKnife.bind(this, view);
+
+        pageTitle = view.findViewById(R.id.page_title);
+        tvAreaId = view.findViewById(R.id.tv_area_id);
+        etGatewayId = view.findViewById(R.id.et_gateway_id);
+        etGroupCount = view.findViewById(R.id.et_group_count);
+        etAreaId = view.findViewById(R.id.et_area_id);
+        etDeviceLine = view.findViewById(R.id.et_device_line);
+        etDevice2groupLine = view.findViewById(R.id.et_device_2group_line);
+        btnCsvGroupCheck = view.findViewById(R.id.btn_csv_group_check);
+        btnCsvSecondGroupCheck = view.findViewById(R.id.btn_group_second_check);
+        btnGroupSend = view.findViewById(R.id.btn_group_first_send);
+        btnSecondGroupSend = view.findViewById(R.id.btn_group_second_send);
+        btnFirstGroupCheck = view.findViewById(R.id.btn_group_first_check);
+        btnSetting = view.findViewById(R.id.btn_setting_first_group_confirm);
+        btnSecondSetting = view.findViewById(R.id.btn_setting_second_group_confirm);
+        btnUpdate = view.findViewById(R.id.btn_update);
+
         pageTitle.setText("개별 구역등 설정");
 
         // 채널 변경
@@ -246,8 +264,7 @@ public class ScannerSettingIndiFragment extends Fragment {
                 File path= RememberData.getInstance().getSavefilepath();
                 Log.d(TAG,"path : "+path);
 
-                if(path.toString()=="NULL")
-                {
+                if (path == null || path.toString().equals("NULL")) {
                     Toast.makeText(getContext(),"파일이 선택되어 있지 않습니다.",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -261,8 +278,8 @@ public class ScannerSettingIndiFragment extends Fragment {
                 Log.d(TAG,"total Device count : "+totalDevices);
 
                 try {
-                    FileInputStream in=new FileInputStream(path);
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(in));
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
                     new Thread(){
                         @Override
@@ -361,22 +378,23 @@ public class ScannerSettingIndiFragment extends Fragment {
                 }
 
                 File path = RememberData.getInstance().getSavefilepath();
-                File newFile = new File(Environment.getExternalStorageDirectory(),"Area_Group/new1.csv");
+                File dir = requireContext().getExternalFilesDir("Area_Group");
+                if (dir != null && !dir.exists()) {
+                    dir.mkdirs();
+                }
+                File newFile = new File(dir, "new1.csv");
 
-//                Log.d(TAG,"path : "+path);
-//                Log.d(TAG,"path1 : "+newFile);
-
-                if(path.toString()=="NULL")
-                {
-                    Toast.makeText(getContext(),"수정할 파일이 선택되어 있지 않습니다.",Toast.LENGTH_SHORT).show();
+                if (path == null || path.toString().equals("NULL")) {
+                    Toast.makeText(getContext(), "수정할 파일이 선택되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 try {
-                    FileInputStream in = new FileInputStream(path);
-                    FileOutputStream out = new FileOutputStream(newFile, false);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
+                    OutputStream outputStream = new FileOutputStream(newFile, false);
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
                     new Thread(){
                         @Override
@@ -447,20 +465,16 @@ public class ScannerSettingIndiFragment extends Fragment {
                             }
                             try {
                                 writer.close();
-                                out.close();
+                                outputStream.close();
                                 reader.close();
-                                in.close();
+                                inputStream.close();
                                 getActivity().runOnUiThread(new Runnable() {
                                     public void run() {
                                         Toast.makeText(getContext(),"저장 되었습니다.",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 //파일 덮어쓰기
-                                if(newFile.renameTo(path)){
-                                    Log.d(TAG," 파일 이름변경 성공");
-                                }else{
-                                    Log.d(TAG," 파일 이름변경 실패");
-                                }
+                                overwriteFile(newFile, SearchActivity.DefaultUri);
 
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -474,6 +488,33 @@ public class ScannerSettingIndiFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void overwriteFile(File sourceFile, Uri targetUri) {
+        try {
+            InputStream in = new FileInputStream(sourceFile);
+            OutputStream out = requireContext().getContentResolver().openOutputStream(targetUri, "rwt"); // "rwt" = read/write/truncate
+
+            if (out == null) {
+                Log.e(TAG, "OutputStream is null. Cannot overwrite.");
+                return;
+            }
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = in.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
+            }
+
+            in.close();
+            out.flush();
+            out.close();
+
+            Log.d(TAG, "✅ SAF 파일 덮어쓰기 성공");
+
+        } catch (IOException e) {
+            Log.e(TAG, "❌ SAF 파일 덮어쓰기 실패", e);
+        }
     }
 
     public static int countLines(File aFile) throws IOException {

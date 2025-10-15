@@ -1,18 +1,24 @@
 package net.woorisys.lighting.control3.admin.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,8 +35,6 @@ import net.woorisys.lighting.control3.admin.sjp.observer.FragmentValue;
 import net.woorisys.lighting.control3.admin.sjp.observer.ResultValue;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class BaseActivity extends AppCompatActivity implements BroadcastReceiverListener {
 
@@ -49,44 +53,75 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
 
     private final long FINISH_INTERVAL_TIME = 2000;
 
-    @BindView(R.id.page_title)
+//    @BindView(R.id.page_title)
     TextView pageTitle;
-    @BindView(R.id.btn_Search)
+//    @BindView(R.id.btn_Search)
     Button btnSearch;
-    @BindView(R.id.txt_Path)
+//    @BindView(R.id.txt_Path)
     TextView txt_FilePath_Whole;
-    @BindView(R.id.txt_Path_)
+//    @BindView(R.id.txt_Path_)
     TextView getTxt_FilePath_Whole;
-    @BindView(R.id.bottomNavigationView)
+//    @BindView(R.id.bottomNavigationView)
     BottomNavigationView bottomNavigationView;
+
+//    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+//            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+//
+//        @Override
+//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//            switch (item.getItemId()) {
+//                case R.id.tab1:
+//                    ScannerSettingFragment scannerSettingFragment = ScannerSettingFragment.newInstance();
+//                    replaceFragment(scannerSettingFragment);
+//                    pageTitle.setText("CSV 그룹 설정");
+//                    return true;
+//                case R.id.tab2:
+//                    ScannerSettingIndiFragment scannerSettingIndiFragment = ScannerSettingIndiFragment.newInstance();
+//                    replaceFragment(scannerSettingIndiFragment);
+//                    pageTitle.setText("개별 그룹 설정");
+//                    return true;
+//                case R.id.tab3:
+//                    GatewaySettingFragment gatewaySettingFragment = GatewaySettingFragment.newInstance();
+//                    replaceFragment(gatewaySettingFragment);
+//                    pageTitle.setText("게이트웨이 설정");
+//                    return true;
+//                case R.id.tab4:
+//                    BeaconCheckFragment beaconCheckFragment = BeaconCheckFragment.newInstance();
+//                    replaceFragment(beaconCheckFragment);
+//                    pageTitle.setText("비컨 확인");
+//                    return true;
+//            }
+//            return false;
+//        }
+//    };
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.tab1:
-                    ScannerSettingFragment scannerSettingFragment = ScannerSettingFragment.newInstance();
-                    replaceFragment(scannerSettingFragment);
-                    pageTitle.setText("CSV 그룹 설정");
-                    return true;
-                case R.id.tab2:
-                    ScannerSettingIndiFragment scannerSettingIndiFragment = ScannerSettingIndiFragment.newInstance();
-                    replaceFragment(scannerSettingIndiFragment);
-                    pageTitle.setText("개별 그룹 설정");
-                    return true;
-                case R.id.tab3:
-                    GatewaySettingFragment gatewaySettingFragment = GatewaySettingFragment.newInstance();
-                    replaceFragment(gatewaySettingFragment);
-                    pageTitle.setText("게이트웨이 설정");
-                    return true;
-                case R.id.tab4:
-                    BeaconCheckFragment beaconCheckFragment = BeaconCheckFragment.newInstance();
-                    replaceFragment(beaconCheckFragment);
-                    pageTitle.setText("비컨 확인");
-                    return true;
+            if(item.getItemId() == R.id.tab1) {
+                ScannerSettingFragment scannerSettingFragment = ScannerSettingFragment.newInstance();
+                replaceFragment(scannerSettingFragment);
+                pageTitle.setText("CSV 그룹 설정");
+                return true;
+            }else if(item.getItemId() == R.id.tab2) {
+                ScannerSettingIndiFragment scannerSettingIndiFragment = ScannerSettingIndiFragment.newInstance();
+                replaceFragment(scannerSettingIndiFragment);
+                pageTitle.setText("개별 그룹 설정");
+                return true;
+            }else if(item.getItemId() == R.id.tab3) {
+                GatewaySettingFragment gatewaySettingFragment = GatewaySettingFragment.newInstance();
+                replaceFragment(gatewaySettingFragment);
+                pageTitle.setText("게이트웨이 설정");
+                return true;
+            }else if(item.getItemId() == R.id.tab4) {
+                BeaconCheckFragment beaconCheckFragment = BeaconCheckFragment.newInstance();
+                replaceFragment(beaconCheckFragment);
+                pageTitle.setText("비컨 확인");
+                return true;
             }
+
             return false;
         }
     };
@@ -97,7 +132,13 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
+
+        pageTitle = findViewById(R.id.page_title);
+        btnSearch = findViewById(R.id.btn_Search);
+        txt_FilePath_Whole = findViewById(R.id.txt_Path);
+        getTxt_FilePath_Whole = findViewById(R.id.txt_Path_);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         /** PSJ **/
         //region IntentFilter
@@ -197,6 +238,7 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();
@@ -205,7 +247,11 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         {
             broadcastReceiver=new usbManagement();
             broadcastReceiver.setListener(this);
-            registerReceiver(broadcastReceiver,intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                registerReceiver(broadcastReceiver,intentFilter, Context.RECEIVER_EXPORTED);
+            }else {
+                registerReceiver(broadcastReceiver,intentFilter);
+            }
         }
     }
 
@@ -233,7 +279,6 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         }
     }
 
-
     @Override
     public void Result(FragmentValue fragmentValue, boolean Result , String Message) {
         Log.d(TAG,"FRAGMENT : "+fragmentValue+" / Result : "+Result+" / MESSAGE : "+Message);
@@ -247,6 +292,38 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
             EditTextErrorCheck editTextErrorCheck=new EditTextErrorCheck();
             editTextErrorCheck.ErrorAlertDialog(BaseActivity.this,fragmentValue+" Success",Message);
         }
+    }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        // Check if the URI scheme is "content"
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = null;
+            try {
+                // Query the content resolver for the file's display name
+                cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (index >= 0) {
+                        result = cursor.getString(index);
+                    }
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+
+        // If the display name couldn't be found, fall back to the path
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
 }

@@ -6,12 +6,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 import net.woorisys.lighting.control3.admin.fragment.BaseActivity;
-
-import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -24,7 +22,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(MainActivity.this);
+//        ButterKnife.bind(MainActivity.this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {

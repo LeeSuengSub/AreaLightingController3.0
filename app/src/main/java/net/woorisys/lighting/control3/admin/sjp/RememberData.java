@@ -1,5 +1,7 @@
 package net.woorisys.lighting.control3.admin.sjp;
 
+import android.net.Uri;
+
 import java.io.File;
 
 import lombok.Getter;
