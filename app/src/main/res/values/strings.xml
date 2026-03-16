@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">AreaLightingControl3.0</string>
+    <string name="app_name_yongmoon">AreaLightingControl3.0\n용문</string>
     <string name="copyright">Copyrightⓒ WOORI SYSTEM All Rights Reserved</string>
     <string name="connect_dongle">동글 연결하기</string>
     <string name="individual_group_setting">개별 그룹 설정</string>

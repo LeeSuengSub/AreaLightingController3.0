@@ -1,15 +1,25 @@
 package net.woorisys.lighting.control3.admin.sjp;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.woorisys.lighting.control3.admin.search.SearchActivity;
@@ -294,35 +304,47 @@ public class usbManagement extends BroadcastReceiver {
 
                                         try
                                         {
-                                            if(groupRes.getRawContent()!=null)
-                                            {
-                                                String [] parsing=groupRes.getRawContent().split(",");
-                                                String Count=parsing[1];
-                                                String temp = String.join(",", Arrays.copyOfRange(parsing, 2, parsing.length));
-//                                                String Group="그룹 : ";for(int i=2; i<Integer.valueOf(Count)*3+2;i++)
-//                                                {
-//                                                    Log.d(TAG,"PDU ITEM : "+parsing[i]);
-//                                                    Group+=parsing[i]; //ss1234
-//
-//                                                    if(i!=Integer.valueOf(Count)*2+1)
-//                                                    {
-//                                                        Group+=",";
-//                                                    }
-//                                                }
+                                            if (groupRes.getRawContent() != null) {
+                                                String rawData = groupRes.getRawContent();
+                                                String[] parsing = rawData.split(",");
+                                                String countStr = parsing[1];
 
-                                                String Result=" 전체 그룹 갯수 : "+Count+"\n그룹 : "+temp;
-                                                Log.d(TAG,"PDU RESULT : "+Result);
-                                                Log.d("ss1234", temp);
+                                                // 상단에 표시할 원본 데이터 텍스트 가공
+                                                String rawResultText = " 전체 그룹 갯수 : " + countStr + "\n그룹 : " +
+                                                        String.join(",", Arrays.copyOfRange(parsing, 2, parsing.length));
 
-                                                Looper.prepare();
-                                                Handler handler=new Handler();
-                                                handler.post(new Runnable() {
+                                                new Handler(Looper.getMainLooper()).post(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        listener.Result(FragmentValue.ScannerSetting,true,Result);
+                                                        if (context == null) return;
+
+                                                        LinearLayout rootLayout = new LinearLayout(context);
+                                                        rootLayout.setOrientation(LinearLayout.VERTICAL);
+                                                        rootLayout.setPadding(30, 30, 30, 30);
+
+                                                        // 1. 기존 데이터 텍스트 표시
+                                                        TextView tvRaw = new TextView(context);
+                                                        tvRaw.setText(rawResultText);
+                                                        tvRaw.setTextColor(Color.parseColor("#555555"));
+                                                        tvRaw.setPadding(0, 0, 0, 40);
+                                                        rootLayout.addView(tvRaw);
+
+                                                        // 2. 표(Table) 추가
+                                                        View tableV = createTableView(context, parsing);
+                                                        rootLayout.addView(tableV);
+
+                                                        ScrollView scrollView = new ScrollView(context);
+                                                        scrollView.addView(rootLayout);
+
+                                                        new AlertDialog.Builder(context)
+                                                                .setTitle("그룹 통신 상태 상세 보고")
+                                                                .setView(scrollView)
+                                                                .setPositiveButton("확인", null)
+                                                                .show();
+
+//                                                        listener.Result(FragmentValue.ScannerSetting, true, "데이터 수집 완료");
                                                     }
                                                 });
-                                                Looper.loop();
                                             }
                                             else
                                             {
@@ -813,6 +835,92 @@ public class usbManagement extends BroadcastReceiver {
         System.out.println("Device id is '" + id + "'");
 
         return id;
+    }
+
+    private View createTableView(Context ctx, String[] parsing) {
+        // parsing[1]은 전체 개수
+        int count = Integer.parseInt(parsing[1].trim());
+        TableLayout tableLayout = new TableLayout(ctx);
+        tableLayout.setBackgroundColor(Color.BLACK); // 테두리 구분선
+
+        // 헤더 순서: 시리얼 | 상태 | 점유 상태 | 장애인 (4칸 구성)
+        tableLayout.addView(makeTableRow(ctx, "시리얼", "상태", "점유 상태", "장애인", true, 120));
+
+        for (int i = 0; i < count; i++) {
+            // 데이터 구조: [0001(시리얼), 00(상태), 01(장애인)] -> 3개 한 세트
+            // 시작 인덱스는 2번부터, 매 루프마다 3씩 증가 (i * 3)
+            int baseIdx = 2 + (i * 3);
+
+            if (baseIdx < parsing.length) {
+                String serial = parsing[baseIdx].trim(); // 시리얼 (0001)
+                String status = (baseIdx + 1 < parsing.length) ? parsing[baseIdx + 1].trim() : ""; // 상태 (00)
+                String disabledRaw = (baseIdx + 2 < parsing.length) ? parsing[baseIdx + 2].trim() : ""; // 장애인 (01)
+
+                // 장애인 텍스트 변환 (01 -> O, 그 외 -> X)
+                String disabledText = disabledRaw.equals("01") ? "O" : "X";
+
+                // 점유 상태는 상태값(status)을 공유하거나 별도 로직이 없다면 상태값과 동일하게 처리
+                // 여기서는 상태(status) 값을 그대로 점유 상태 칸에도 전달합니다.
+                tableLayout.addView(makeTableRow(ctx, serial, status, status, disabledText, false, 180));
+            }
+        }
+        return tableLayout;
+    }
+
+    private TableRow makeTableRow(Context ctx, String t1, String t2, String t3, String t4, boolean isHeader, int height) {
+        TableRow row = new TableRow(ctx);
+        row.setPadding(2, 2, 2, 2);
+        int bgColor = isHeader ? Color.parseColor("#EEEEEE") : Color.WHITE;
+
+        // 1. 시리얼 (t1) - 텍스트 출력
+        row.addView(makeTextCell(ctx, t1, bgColor, isHeader, height));
+
+        // 2. 상태 (t2) - 00이면 무조건 빨강!!
+        if (isHeader) {
+            row.addView(makeTextCell(ctx, t2, bgColor, true, height));
+        } else {
+            int sColor = t2.equals("00") ? Color.parseColor("#E74C3C") : Color.parseColor("#2ECC71");
+            row.addView(makeColorView(ctx, sColor, height));
+        }
+
+        // 3. 점유 상태 (t3) - 상태와 동일하게 00이면 빨강, 아니면 초록
+        if (isHeader) {
+            row.addView(makeTextCell(ctx, t3, bgColor, true, height));
+        } else {
+            int oColor = t3.equals("00") ? Color.parseColor("#E74C3C") : Color.parseColor("#2ECC71");
+            row.addView(makeColorView(ctx, oColor, height));
+        }
+
+        // 4. 장애인 (t4) - O/X 텍스트
+        row.addView(makeTextCell(ctx, t4, bgColor, isHeader, height));
+
+        return row;
+    }
+
+    // 텍스트 셀 생성 메서드
+    private View makeTextCell(Context ctx, String text, int bgColor, boolean isBold, int height) {
+        TextView tv = new TextView(ctx);
+        tv.setText(text);
+        tv.setGravity(Gravity.CENTER);
+        tv.setBackgroundColor(bgColor);
+        tv.setTextColor(Color.BLACK);
+        tv.setTextSize(16);
+        if(isBold) tv.setTypeface(null, Typeface.BOLD);
+
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, height, 1f);
+        params.setMargins(2, 2, 2, 2);
+        tv.setLayoutParams(params);
+        return tv;
+    }
+
+    // 색상 뷰 생성 메서드
+    private View makeColorView(Context ctx, int color, int height) {
+        View v = new View(ctx);
+        v.setBackgroundColor(color);
+        TableRow.LayoutParams p = new TableRow.LayoutParams(0, height, 1f);
+        p.setMargins(2, 2, 2, 2);
+        v.setLayoutParams(p);
+        return v;
     }
 
     @Setter

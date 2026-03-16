@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+
     signingConfigs {
         debug {
             storeFile file('C:\\Dev\\android\\ictapk.jks')
@@ -15,7 +16,9 @@ android {
             keyAlias 'key0'
         }
     }
-    compileSdkVersion 34
+
+    compileSdkVersion 36
+
     defaultConfig {
         applicationId "net.woorisys.lighting.control3.AreaLighting"
         minSdkVersion 28
@@ -25,10 +28,18 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+
     buildTypes {
         release {
+            applicationIdSuffix ".release"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        youngmoon {
+            initWith debug
+            applicationIdSuffix ".youngmoon"
+            resValue "string", "app_name", "AreaLightingControl3.0_용문"
         }
     }
 
@@ -37,45 +48,10 @@ android {
         sourceCompatibility = "8"
     }
 
-    lintOptions {
-
-        checkReleaseBuilds false
-
-        // Or, if you prefer, you can continue to check for errors in release builds,
-
-        // but continue the build even when errors are found:
-
-        abortOnError false
-
-    }
-
-    packagingOptions {
-
-        exclude 'META-INF/DEPENDENCIES.txt'
-
-        exclude 'META-INF/LICENSE.txt'
-
-        exclude 'META-INF/NOTICE.txt'
-
-        exclude 'META-INF/NOTICE'
-
-        exclude 'META-INF/LICENSE'
-
-        exclude 'META-INF/DEPENDENCIES'
-
-        exclude 'META-INF/notice.txt'
-
-        exclude 'META-INF/license.txt'
-
-        exclude 'META-INF/dependencies.txt'
-
-        exclude 'META-INF/LGPL2.1'
-
-    }
-
     dataBinding {
         enabled = true
     }
+
     namespace 'net.woorisys.lighting.control3.admin'
 }
 
@@ -90,6 +66,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "androidx.core:core-ktx:1.15.0"
+    implementation 'androidx.core:core:1.17.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
