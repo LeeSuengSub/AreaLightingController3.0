@@ -18,7 +18,7 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="구역등 설정"
+            android:text="구역등 설정 \n 용문 더샵"
             android:textAlignment="center"
             android:gravity="center_horizontal|center_vertical"
             android:textColor="#79E45C"
