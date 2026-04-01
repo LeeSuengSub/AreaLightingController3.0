@@ -8,14 +8,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +57,7 @@ public class ScannerSettingIndiFragment extends Fragment {
     Button btnGroupCheck;
     Button btnSetting;
     Button btnUpdate;
+    Button btnChannelSetting;
 
 
 //    @BindView(R.id.et_Serial)
@@ -100,6 +105,13 @@ public class ScannerSettingIndiFragment extends Fragment {
         btnGroupCheck=view.findViewById(R.id.btn_group_check);
         btnSetting=view.findViewById(R.id.btn_setting_confirm);
         btnUpdate=view.findViewById(R.id.btn_update);
+        btnChannelSetting=view.findViewById(R.id.btn_channel_setting);
+
+        Spinner spinner = view.findViewById(R.id.spinner_channel);
+
+        ArrayAdapter<String> adapter = getStringArrayAdapter();
+
+        spinner.setAdapter(adapter);
 
         pageTitle.setText("개별 구역등 설정");
 
@@ -120,7 +132,21 @@ public class ScannerSettingIndiFragment extends Fragment {
 //                getActivity().sendBroadcast(intent);
 //            }
 //        });
+        // 동글 채널 변경
+        btnChannelSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                String selectedChannel = spinner.getSelectedItem().toString();
+                String[] channelSplits = selectedChannel.split("-");
+                String channel = channelSplits[0].replaceAll("ch.","");
+
+                Intent intent=new Intent(usbManagement.getAction_Channel_Change());
+                intent.putExtra("channel",channel);
+                getActivity().sendBroadcast(intent);
+            }
+        });
+        
         // 그룹 전송
         btnGroupSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -409,6 +435,23 @@ public class ScannerSettingIndiFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    
+
+    @NonNull
+    private ArrayAdapter<String> getStringArrayAdapter() {
+        String[] channels = {"ch.11-5001,5017,5033", "ch.12-5002,5018,5034", "ch.13-5003,5019,5035", "ch.14-5004,5020,5036", "ch.15-5005,5021,5037", "ch.16-5006,5022,5038", "ch.17-5007,5023,5039", "ch.18-5008,5024,5040", "ch.19-5009,5025,5041",
+                "ch.20-5010,5026,5042", "ch.21-5011,5027,5043", "ch.22-5012,5028,5044", "ch.23-5013,5029,5045", "ch.24-5014,5030,5046", "ch.25-5015,5031,5047", "ch.26-5016,5032,5048"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                channels
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
     }
 
     private void overwriteFile(File sourceFile, Uri targetUri) {

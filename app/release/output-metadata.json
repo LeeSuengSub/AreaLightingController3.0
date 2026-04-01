@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "net.woorisys.lighting.control3.AreaLighting",
+  "applicationId": "net.woorisys.lighting.control3.AreaLighting.release",
   "variantName": "release",
   "elements": [
     {

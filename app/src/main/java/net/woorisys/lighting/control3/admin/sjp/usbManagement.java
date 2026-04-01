@@ -110,9 +110,12 @@ public class usbManagement extends BroadcastReceiver {
             case Action_Channel_Change:
                 try
                 {
-                    if(usbDeviceManager.ChannelChange(intent.getExtras().getString("channel")))
+                    String channel = intent.getExtras().getString("channel");
+                    if(usbDeviceManager.ChannelChange(channel))
                     {
-                        listener.Result(FragmentValue.ScannerSetting,true,"요청이 정상적으로 처리되었습니다.");
+                        Toast.makeText(context, channel+"번 채널로 변경되었습니다.", Toast.LENGTH_SHORT).show();
+//                        listener.Result(FragmentValue.ScannerSetting,true,"요청이 정상적으로 처리되었습니다.");
+
                     }
                     else
                     {
@@ -139,7 +142,7 @@ public class usbManagement extends BroadcastReceiver {
                 }
 
                 path=RememberData.getInstance().getSavefilepath();
-                Log.d(TAG,"path : "+path);
+//                Log.d(TAG,"path : "+path);
                 if(path.toString()=="NULL")
                 {
                     listener.Result(FragmentValue.ScannerSetting,false,"파일이 선택되어 있지 않습니다.");
@@ -172,7 +175,7 @@ public class usbManagement extends BroadcastReceiver {
                                         continue;
 
                                     String id = columns[1].trim(); //구역등
-                                    String gateway=columns[0].trim(); //게이트웨이
+                                    String gateway=columns[0].replaceAll("[^0-9]", "");; //게이트웨이
                                     int length =Integer.valueOf(columns[2].trim()); //data length
                                     int total_len =length * 2; //data length
                                     String[] memberIds = new String[length]; //주차면 ID
@@ -290,7 +293,7 @@ public class usbManagement extends BroadcastReceiver {
                                     if (columns.length < 2)
                                         continue;
 
-                                    String gateway=columns[0].trim();
+                                    String gateway=columns[0].replaceAll("[^0-9]", "");
                                     String id = columns[1].trim();
 
                                     cnt++;
@@ -442,7 +445,7 @@ public class usbManagement extends BroadcastReceiver {
                                         continue;
 
                                     String id = columns[1].trim();
-                                    String gateway=columns[0].trim();
+                                    String gateway=columns[0].replaceAll("[^0-9]", "");
 
                                     cnt++;
                                     // id 가 일치하는 것이 존재 할 경우
@@ -786,6 +789,10 @@ public class usbManagement extends BroadcastReceiver {
 
     public void setDongleChannel(String id)
     {
+        id = id.replaceAll("[^0-9]", "");
+//        Log.d("ss1234", "setDongleChannel called with id: '" + id +"'");
+//        Log.d("ss1234", "setDongleChannel called with id: " + id.length());
+
         //채널을 먼저 변경한다.
         //광교에서 잘못된거 5001 채널이 17이다
         if(id.equals("5001") ||  id.equals("5017") ||  id.equals("5033")){
@@ -821,6 +828,7 @@ public class usbManagement extends BroadcastReceiver {
         }else if(id.equals("5016") ||  id.equals("5032") ||  id.equals("5048")){
             usbDeviceManager.ChannelChange("26");
         }
+
     }
 
     private String getAddress(String mac) {

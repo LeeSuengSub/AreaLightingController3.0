@@ -421,6 +421,9 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 	{
 		ChannelChangePDU pdu=new ChannelChangePDU(Channel);
 
+		Log.d(TAG,"ss1234 : "+Channel);
+		Log.d(TAG,"ss1234 : "+pdu);
+
 		ResponsePDUBase responsePDUBase=sendCommand(pdu);
 
 		return responsePDUBase.getResult();
