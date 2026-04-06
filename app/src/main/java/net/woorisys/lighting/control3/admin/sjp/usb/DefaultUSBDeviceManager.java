@@ -15,6 +15,7 @@ import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.ChannelSetPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.Config2RequestPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.ConfigPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.ConfigRequestPDU;
+import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.DisplaySettingPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.DongCannelPDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupDeletePDU;
 import net.woorisys.lighting.control3.admin.sjp.usb.pdu.request.GroupPDU;
@@ -78,9 +79,7 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
                               UsbDevice device, SerialSettings serialSettings)
 
 			throws USBTerminalException {
-		Log.d(TAG,"DEVIDE VID : "+device.getVendorId());
-
-		System.out.println("VID = " + device.getVendorId());
+		Log.d(TAG,"DEVICE VID : "+device.getVendorId());
 
 		if (device.getVendorId() == CP210XConstants.CP2102_VENDOR_ID) {
 			usbDeviceManager = new CP210XUSBDeviceManager(context, handler, usbManager);
@@ -160,17 +159,11 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 	 * @return MAC 주소가 유효하지 않는 형태이니 경우 NULL을 리턴한다.
 	 */
 	private String getAddress(String mac) {
-		System.out.println("mac ===> " + mac);
 		mac = NumberUtil.convert2Hex(mac);
 		if (mac.length() < 4) {
-			System.out.println("Invalid mac address '" + mac + "'");
 			return null;
 		}
-
-		String id = mac.substring(mac.length() - 4);
-		System.out.println("Device id is '" + id + "'");
-
-		return id;
+		return mac.substring(mac.length() - 4);
 	}
 
 	/**
@@ -429,6 +422,17 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 		return responsePDUBase.getResult();
 	}
 
+	public boolean DisplaySetting(String gatewayId, String firstData, String secondData, String thirdData, String fourthData, String fifthData, String sixthData, String seventhData, String eighthData, String ninthData, String tenthData) {
+		int length = 10;
+
+		DisplaySettingPDU pdu = new DisplaySettingPDU(gatewayId, length, firstData, secondData, thirdData, fourthData, fifthData, sixthData, seventhData, eighthData, ninthData, tenthData);
+		Log.d(TAG, "DisplaySetting pdu : "+pdu.encode());
+
+		ResponsePDUBase response = sendCommand(pdu);
+		Log.d(TAG, "DisplaySetting sendCommand : "+response.toString());
+		return response.getResult();
+	}
+
 	public boolean Setting(String Gateway,String Serial)
 	{
 		SettingPDU pdu=new SettingPDU(Gateway,Serial);
@@ -461,7 +465,6 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 	 */
 	public ConfigResponsePDU sendConfigRequest(String mac) {
 		String id = getAddress(mac);
-		System.out.println("sendConfigRequest============>>>>>>>>>>");
 		if (null == id)
 			return null;
 
@@ -576,10 +579,6 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 	public ResponsePDUBase sendCommand(RequestPDUBase3 pduBase)
 	{
 		String response=sendCommand(pduBase.encode());
-
-		System.out.println("requestPDUBase3 => : " + pduBase);
-		System.out.println("requestPDUBase3 ==> : "+ pduBase.encode());
-
 		Log.d(TAG,"RESPONSE  : "+response);
 
 		NormalResponsePDU normalResponsePDU=new NormalResponsePDU();
@@ -677,7 +676,7 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 				return responseInterruptState;
 		}
 
-		System.out.println("Invalid pdu: " + response);
+		Log.d(TAG, "Invalid pdu: " + response);
 		return null;
 	}
 
@@ -706,7 +705,7 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 			StringBuilder sb = new StringBuilder();
 
 			int ret = recv(recvBuffer);
-			
+
 			if (ret < 0) {
 				Log.e("Send Command3", "센서가 응답하지 않습니다");
 				Message message = handler.obtainMessage();
@@ -715,11 +714,7 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 				return "";
 			}
 
-			System.out.println("Received bytes " + ret);
-			Log.e("Received bytes", Arrays.toString(recvBuffer));
 			if (ret != 0) {
-				System.out.println("Received : " + new String(recvBuffer, 0, ret));
-				Log.e("Received : ", new String(recvBuffer, 0, ret));
 				sb.append(new String(recvBuffer, 0, ret));
 				if (sb.indexOf(";") != -1)
 					return skipBlankLines(sb.toString());
@@ -760,7 +755,6 @@ public class DefaultUSBDeviceManager extends AbstractUSBDeviceManager {
 			}
 		}
 
-		System.out.println("NORMAL:" + sb.toString());
 		return sb.toString();
 	}
 }

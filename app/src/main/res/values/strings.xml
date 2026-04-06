@@ -6,7 +6,7 @@
     <string name="individual_group_setting">개별 그룹 설정</string>
     <string name="gateway_setting">게이트웨이 설정</string>
     <string name="beacon_check">비컨 확인</string>
-    <string name="fullness_setting">만치기 세팅</string>
+    <string name="fullness_setting">만치기 설정</string>
     <string name="csv_group_setting">CSV 그룹 설정</string>
     <string name="version">ver.250227</string>
 

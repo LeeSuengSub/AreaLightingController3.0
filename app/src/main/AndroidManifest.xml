@@ -3,7 +3,6 @@
 
     <uses-feature android:name="android.hardware.usb.host" />
 
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Bluetooth 관련 Permission -->
@@ -11,6 +10,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <!-- 파일 Storage 관련 Permission -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -52,6 +54,10 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
+
+        <activity android:name=".DeviceControlActivity" />
+        <service android:name=".ble.BluetoothLeService" android:enabled="true" />
+
         <activity
             android:name="net.woorisys.lighting.control3.admin.dongle.ConnectDongleActivity"
             android:launchMode="singleInstance" />

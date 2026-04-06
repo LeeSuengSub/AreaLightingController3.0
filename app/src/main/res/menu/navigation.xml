@@ -17,7 +17,7 @@
     <item
         android:id="@+id/tab4"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/beacon_check" />
+        android:title="@string/fullness_setting" />
     <item
         android:id="@+id/tab5"
         android:icon="@drawable/ic_dashboard_black_24dp"

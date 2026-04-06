@@ -100,6 +100,15 @@ public abstract class RequestPDUBase extends PDU {
 	public static final String COMMAND_ID_GROUP_DISABLE="GROUP_DISABLE";
 
 	public static final String COMMAND_ID_GROUP_STATE_RES="GROUP_S_REQ";
+
+	public static final String ZERO = "0000";
+	public static final String SET_G_GROUP = "SET_G_GROUP";
+	public static final String GET_G_GROUP = "GET_G_GROUP";
+
+	public static final String GET_ETH = "GET_ETH";
+	public static final String SET_ETH = "SET_ETH";
+
+	private String serial;
 	/**
 	 * 대상 장비 4자리 MAC 주소
 	 */
@@ -134,6 +143,15 @@ public abstract class RequestPDUBase extends PDU {
 		if(transferType.equals(TRANSFER_TYPE_BROADCAST)) dest = ADDRESS_BCAST;
 	}
 
+	public RequestPDUBase(String dest, String zero, String gateway, String commandID) {
+		super();
+		this.dest = dest;
+		this.transferType = zero;
+		this.serial = gateway;
+		this.commandID = commandID;
+
+		Log.d("SJP_PDU","fullness REQUEST PDU BASE");
+	}
 	/**
 	 * @return the dest
 	 */

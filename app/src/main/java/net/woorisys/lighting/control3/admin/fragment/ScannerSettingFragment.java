@@ -40,14 +40,13 @@ public class ScannerSettingFragment extends Fragment {
     Button Btn_Group_Send;
     Button Btn_Group_Check;
     Button Btn_Setting;
-//    Button Btn_Group_Togle;
     Button Btn_Router_Rejoin;
     Button Btn_Gateway_Rejoin;
     EditText ET_Serial;
     TextView Tv_Result_Group_Setting;
     Button Btn_csv_group_setting_select;
 
-    private final static String TAG="SJP_DIMMING_TAG";  //  Dimming Setting Fragment Tag
+    private final static String TAG = "SJP_DIMMING_TAG";
 
     private EditTextErrorCheck errorCheck;
 
@@ -55,12 +54,12 @@ public class ScannerSettingFragment extends Fragment {
 
     // 생성자
     public ScannerSettingFragment() {
-
     }
 
     public static ScannerSettingFragment newInstance() {
         return new ScannerSettingFragment();
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,60 +70,50 @@ public class ScannerSettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scanner_setting, container, false);
-//        ButterKnife.bind(this, view);
 
-        //레이아웃
-        pageTitle=view.findViewById(R.id.page_title);
-        ET_Serial=view.findViewById(R.id.et_Serial);
-        Tv_Result_Group_Setting=view.findViewById(R.id.txt_Result_Group_Setting);
+        // 레이아웃
+        pageTitle                  = view.findViewById(R.id.page_title);
+        ET_Serial                  = view.findViewById(R.id.et_Serial);
+        Tv_Result_Group_Setting    = view.findViewById(R.id.txt_Result_Group_Setting);
 
-        //버튼
-        Btn_Group_Send=view.findViewById(R.id.btn_group_send);
-        Btn_Group_Check=view.findViewById(R.id.btn_group_check);
-        Btn_Setting=view.findViewById(R.id.btn_setting_confirm);
-        Btn_Router_Rejoin=view.findViewById(R.id.btn_Router_Rejoin);
-        Btn_Gateway_Rejoin=view.findViewById(R.id.btn_Gateway_Rejoin);
+        // 버튼
+        Btn_Group_Send             = view.findViewById(R.id.btn_group_send);
+        Btn_Group_Check            = view.findViewById(R.id.btn_group_check);
+        Btn_Setting                = view.findViewById(R.id.btn_setting_confirm);
+        Btn_Router_Rejoin          = view.findViewById(R.id.btn_Router_Rejoin);
+        Btn_Gateway_Rejoin         = view.findViewById(R.id.btn_Gateway_Rejoin);
         Btn_csv_group_setting_select = view.findViewById(R.id.btn_csv_group_setting_select);
+
+        // =====================================================
+        // Pill Tab: 비컨 확인 탭 클릭 시 BeaconCheckFragment 로 전환
+        // =====================================================
+        TextView tabBeacon = view.findViewById(R.id.tab_beacon);
+        tabBeacon.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, BeaconCheckFragment.newInstance())
+                        .commit()
+        );
 
         pageTitle.setText("구역등 설정");
 
-        // 채널 변경
-        // 채널 설정
-//        Btn_ChannelSetting.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                if(ET_ChannelSetting.getText().toString().isEmpty())
-//                {
-//                    Toast.makeText(getContext(),"채널을 입력하여 주세요~",Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                Intent intent=new Intent(usbManagement.getAction_Channel_Change());
-//                intent.putExtra("channel",ET_ChannelSetting.getText().toString());
-//                getActivity().sendBroadcast(intent);
-//            }
-//        });
-
+        // CSV 조회
         Btn_csv_group_setting_select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ET_Serial.getText().toString().isEmpty())
-                {
-                    Toast.makeText(getContext(),"시리얼을 입력하여 주세요",Toast.LENGTH_SHORT).show();
+                if (ET_Serial.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String selAreaId = String.valueOf(ET_Serial.getText());
-                Log.d(TAG,"조회 클릭 " + ET_Serial.getText());
+                Log.d(TAG, "조회 클릭 " + ET_Serial.getText());
 
-                File path= RememberData.getInstance().getSavefilepath();
-                Log.d(TAG,"path : "+path);
+                File path = RememberData.getInstance().getSavefilepath();
+                Log.d(TAG, "path : " + path);
 
-                if(path.toString()=="NULL")
-                {
-                    Toast.makeText(getContext(),"파일이 선택되어 있지 않습니다.",Toast.LENGTH_SHORT).show();
+                if (path.toString() == "NULL") {
+                    Toast.makeText(getContext(), "파일이 선택되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -134,39 +123,31 @@ public class ScannerSettingFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-                Log.d(TAG,"total Device count : "+totalDevices);
+                Log.d(TAG, "total Device count : " + totalDevices);
 
                 try {
                     InputStream inputStream = requireContext().getContentResolver().openInputStream(SearchActivity.DefaultUri);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-                    new Thread(){
+                    new Thread() {
                         @Override
                         public void run() {
                             super.run();
-
-                            int cnt=0;
-
-                            while (true)
-                            {
+                            int cnt = 0;
+                            while (true) {
                                 String line;
                                 try {
-                                    line=reader.readLine();
-                                    Log.d("ss1234","line  : "+line);
-                                    if (line == null)
-                                        break;
+                                    line = reader.readLine();
+                                    Log.d("ss1234", "line  : " + line);
+                                    if (line == null) break;
                                     String[] columns = line.split(",");
-                                    if (columns.length < 2)
-                                        continue;
+                                    if (columns.length < 2) continue;
 
                                     String id = columns[1].trim();
                                     String device_list_line = line;
 
                                     cnt++;
-                                    // id 가 일치하는 것이 존재 할 경우
-                                    if(id.equals(selAreaId) || id == selAreaId )
-                                    {
-
+                                    if (id.equals(selAreaId) || id == selAreaId) {
                                         getActivity().runOnUiThread(new Runnable() {
                                             public void run() {
                                                 Tv_Result_Group_Setting.setText(device_list_line);
@@ -175,15 +156,13 @@ public class ScannerSettingFragment extends Fragment {
                                         break;
                                     }
 
-                                    // 일치하는 Serial ID 가 없을 경우
-                                    if(totalDevices==cnt)
-                                    {
+                                    if (totalDevices == cnt) {
                                         Looper.prepare();
-                                        Handler handler=new Handler();
+                                        Handler handler = new Handler();
                                         handler.post(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getContext(),"일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.",Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getContext(), "일치하는 시리얼 번호가 없습니다. CSV 파일을 확인하여 주세요.", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                                         Looper.loop();
@@ -192,7 +171,6 @@ public class ScannerSettingFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                             }
-
                         }
                     }.start();
 
@@ -206,15 +184,12 @@ public class ScannerSettingFragment extends Fragment {
         Btn_Group_Send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(ET_Serial.getText().toString().isEmpty())
-                {
-                    Toast.makeText(getContext(),"시리얼을 입력하여 주세요",Toast.LENGTH_SHORT).show();
+                if (ET_Serial.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Intent intent=new Intent(usbManagement.getAction_Group_Setting());
-                intent.putExtra("serial",ET_Serial.getText().toString());
+                Intent intent = new Intent(usbManagement.getAction_Group_Setting());
+                intent.putExtra("serial", ET_Serial.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -223,15 +198,12 @@ public class ScannerSettingFragment extends Fragment {
         Btn_Group_Check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(ET_Serial.getText().toString().isEmpty())
-                {
-                    Toast.makeText(getContext(),"시리얼을 입력하여 주세요",Toast.LENGTH_SHORT).show();
+                if (ET_Serial.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Intent intent=new Intent(usbManagement.getAction_Group_Check());
-                intent.putExtra("serial",ET_Serial.getText().toString());
+                Intent intent = new Intent(usbManagement.getAction_Group_Check());
+                intent.putExtra("serial", ET_Serial.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -240,32 +212,21 @@ public class ScannerSettingFragment extends Fragment {
         Btn_Setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(ET_Serial.getText().toString().isEmpty())
-                {
-                    Toast.makeText(getContext(),"시리얼을 입력하여 주세요",Toast.LENGTH_SHORT).show();
+                if (ET_Serial.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "시리얼을 입력하여 주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Intent intent=new Intent(usbManagement.getAction_Setting_Confirm());
-                intent.putExtra("serial",ET_Serial.getText().toString());
+                Intent intent = new Intent(usbManagement.getAction_Setting_Confirm());
+                intent.putExtra("serial", ET_Serial.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
 
-//        Btn_Group_Togle.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent=new Intent(usbManagement.getAction_Group_Toggle());
-//                getActivity().sendBroadcast(intent);
-//            }
-//        });
-
         Btn_Router_Rejoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(usbManagement.getAction_Router_Rejoin());
-                intent.putExtra("serial",ET_Serial.getText().toString());
+                Intent intent = new Intent(usbManagement.getAction_Router_Rejoin());
+                intent.putExtra("serial", ET_Serial.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -273,8 +234,8 @@ public class ScannerSettingFragment extends Fragment {
         Btn_Gateway_Rejoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(usbManagement.getAction_Gateway_Rejoin());
-                intent.putExtra("serial",ET_Serial.getText().toString());
+                Intent intent = new Intent(usbManagement.getAction_Gateway_Rejoin());
+                intent.putExtra("serial", ET_Serial.getText().toString());
                 getActivity().sendBroadcast(intent);
             }
         });
@@ -286,12 +247,12 @@ public class ScannerSettingFragment extends Fragment {
         LineNumberReader reader = null;
         try {
             reader = new LineNumberReader(new FileReader(aFile));
-            while ((reader.readLine()) != null);
+            while ((reader.readLine()) != null) ;
             return reader.getLineNumber();
         } catch (Exception ex) {
             return -1;
         } finally {
-            if(reader != null)
+            if (reader != null)
                 reader.close();
         }
     }

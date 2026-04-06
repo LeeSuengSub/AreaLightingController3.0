@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".fragment.ScannerSettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,13 +18,54 @@
             layout="@layout/common_sub_toolbar"
             android:visibility="visible" />
 
+        <!-- Pill Tab (상단 중앙) : Scanner 탭이 active 상태 -->
+        <LinearLayout
+            android:id="@+id/tab_container"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_below="@+id/toolbar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_blue_rect_radius_20"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/tab_scanner"
+                android:layout_width="130dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_left_round"
+                android:gravity="center"
+                android:text="구역등 설정"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tab_beacon"
+                android:layout_width="130dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="비컨 확인"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- 콘텐츠 영역 -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tab_container"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="50dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/toolbar"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
             android:orientation="vertical"
             android:visibility="visible">
 
@@ -34,12 +73,11 @@
                 android:text="@string/version"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textColor="@color/white"
-                />
+                android:textColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="20dp"
                 android:layout_marginRight="5dp"
                 android:orientation="horizontal"/>
 
@@ -77,14 +115,14 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btn_group_send"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/custom_ripple_effect"
@@ -93,7 +131,7 @@
                 <Button
                     android:id="@+id/btn_group_check"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/custom_ripple_effect"
@@ -102,7 +140,7 @@
                 <Button
                     android:id="@+id/btn_setting_confirm"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/custom_ripple_effect"
@@ -124,24 +162,13 @@
                     android:layout_marginTop="10dp"
                     android:background="@color/copyright" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
-
-<!--                <Button-->
-<!--                    android:id="@+id/btn_Group_Togle"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="토글" />-->
 
                 <Button
                     android:id="@+id/btn_Router_Rejoin"
@@ -159,6 +186,8 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </RelativeLayout>
 

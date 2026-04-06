@@ -78,6 +78,10 @@ public class usbManagement extends BroadcastReceiver {
     //게이트웨이 초기화 하여 라우터가 다시 조인할 수 있도록 한다.
     @Getter private final static String Action_Gateway_Rejoin = "gateway.rejoin";
 
+    //만차기 세팅
+    @Getter private final static String Action_Fullness_Display = "fullness.display";
+    @Getter private final static String Action_Fullness_Get_Info = "fullness.get.info";
+
     // USB 분리
     @Getter private final static String Action_Usb_Detached=UsbManager.ACTION_USB_DEVICE_DETACHED;
     // USB 연결
@@ -497,7 +501,13 @@ public class usbManagement extends BroadcastReceiver {
             case Action_Gateway_Setting:
                 gateway=intent.getExtras().getString("serial");
                 String sendLine=intent.getExtras().getString("send_line");
-                setDongleChannel(gateway);
+                String kind = intent.getExtras().getString("kind");
+                if(kind.equals("만차기")) {
+                    setDongleChannel(kind);
+                }else {
+                    setDongleChannel(gateway);
+                }
+
                 String recvMsg_setting=usbDeviceManager.sendCommand(sendLine);
 
                 new Thread(){
@@ -543,8 +553,14 @@ public class usbManagement extends BroadcastReceiver {
 
             case Action_Gateway_Check:
                 gateway=intent.getExtras().getString("serial");
+                kind=intent.getExtras().getString("kind");
                 String sendMsg = gateway+",0000,"+gateway+",GET_ETH;";
-                setDongleChannel(gateway);
+                if(kind.equals("만차기")) {
+                    setDongleChannel(kind);
+                }else {
+                    setDongleChannel(gateway);
+                }
+
                 String recvMsg_check=usbDeviceManager.sendCommand(sendMsg);
 
                 Log.d(TAG,"Gateway SendMsg : "+sendMsg);
@@ -568,6 +584,79 @@ public class usbManagement extends BroadcastReceiver {
                                     @Override
                                     public void run() {
                                         listener.Result(FragmentValue.GatewaySetting,true,recvMsg_check);
+                                    }
+                                });
+                                Looper.loop();
+                            }
+                            else
+                            {
+                                Looper.prepare();
+                                Handler handler=new Handler();
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.Result(FragmentValue.GatewaySetting,false,"수집에 실패하였습니다.");
+                                    }
+                                });
+                                Looper.loop();
+                            }
+                        }
+                    }
+                }.start();
+                break;
+
+            case Action_Fullness_Display:
+                setDongleChannel("5016");
+                serial=intent.getExtras().getString("serial");
+
+                String first=intent.getExtras().getString("first");
+                String second=intent.getExtras().getString("second");
+                String third=intent.getExtras().getString("third");
+                String fourth=intent.getExtras().getString("fourth");
+                String fifth=intent.getExtras().getString("fifth");
+                String sixth=intent.getExtras().getString("sixth");
+                String seventh=intent.getExtras().getString("seventh");
+                String eighth=intent.getExtras().getString("eighth");
+                String ninth=intent.getExtras().getString("ninth");
+                String tenth=intent.getExtras().getString("tenth");
+
+                Log.d(TAG, "Serial_Setting : "+intent.getExtras().getString("serial"));
+                Log.d(TAG, "first : "+first + ", second : " + second + ", third : "+third + ", fourth : "+fourth + ", fifth : "+fifth + ", sixth : "+sixth + ", seventh : "+seventh + ", eighth : " + eighth+ ", ninth : " + ninth+ ", tenth : " + tenth);
+                if(usbDeviceManager.DisplaySetting(serial, first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth)) {
+                    listener.Result(FragmentValue.FullnessDisplay,true, "요청이 정상적으로 처리되었습니다.");
+                }else {
+                    listener.Result(FragmentValue.FullnessDisplay,false,"요청이 정상적으로 처리되지 않았습니다.");
+                }
+                break;
+
+            case Action_Fullness_Get_Info:
+                setDongleChannel("만차기");
+
+                gateway=intent.getExtras().getString("serial");
+                String sendFullMsg = gateway+",0000,"+gateway+",GET_G_GROUP;";
+                String recvFull_Msg_check=usbDeviceManager.sendCommand(sendFullMsg);
+
+                Log.d(TAG,"Fullness SendMsg : "+sendFullMsg);
+                Log.d(TAG,"Fullness Result : "+recvFull_Msg_check);
+
+                new Thread(){
+                    @Override
+                    public void run() {
+                        super.run();
+
+                        while (true)
+                        {
+                            if(recvFull_Msg_check!=null)
+                            {
+
+                                Log.d(TAG,"PDU RESULT : "+recvFull_Msg_check);
+
+                                Looper.prepare();
+                                Handler handler=new Handler();
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.Result(FragmentValue.FullnessDisplay,true,recvFull_Msg_check);
                                     }
                                 });
                                 Looper.loop();
@@ -825,7 +914,7 @@ public class usbManagement extends BroadcastReceiver {
             usbDeviceManager.ChannelChange("24");
         }else if(id.equals("5015") ||  id.equals("5031") ||  id.equals("5047")){
             usbDeviceManager.ChannelChange("25");
-        }else if(id.equals("5016") ||  id.equals("5032") ||  id.equals("5048")){
+        }else if(id.equals("5016") ||  id.equals("5032") ||  id.equals("5048")  || id.equals("만차기")){
             usbDeviceManager.ChannelChange("26");
         }
 

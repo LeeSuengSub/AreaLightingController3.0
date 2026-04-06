@@ -1,18 +1,11 @@
 package net.woorisys.lighting.control3.admin.search;
 
 import android.Manifest;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.UriPermission;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,13 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.documentfile.provider.DocumentFile;
 
@@ -41,8 +29,6 @@ import net.woorisys.lighting.control3.admin.domain.Temp;
 import net.woorisys.lighting.control3.admin.sjp.RememberData;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +57,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_search);
-//        ButterKnife.bind(this);
         binding = DataBindingUtil.setContentView(this, R.layout.content_search);
         binding.setActivity(this);
 
@@ -84,9 +69,6 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         startActivityForResult(intent, REQUEST_CODE_OPEN_DOWNLOAD_FOLDER);
 
-
-
-        btn_refresh=findViewById(R.id.btn_refresh_list);
         btn_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,9 +106,8 @@ public class SearchActivity extends AppCompatActivity {
             if (pickedDir != null && pickedDir.isDirectory()) {
                 for (DocumentFile file : pickedDir.listFiles()) {
                     if (file.isFile() && file.getName().toLowerCase().endsWith(".csv")) {
-                        DefaultUri = file.getUri(); // ✅ 여기에 저장
-                        Log.d(TAG, "DefaultUri 설정됨: " + DefaultUri);
-                        Log.d(TAG, "DefaultUri set to file: " + file.getName() + " | URI: " + DefaultUri);
+                        DefaultUri = file.getUri();
+                        Log.d(TAG, "DefaultUri set: " + file.getName() + " | URI: " + DefaultUri);
                         break;
                     }
                 }
@@ -200,12 +181,6 @@ public class SearchActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-                convertView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        return false;
-                    }
-                });
                 return adapterBinding.getRoot();
             }
         };
@@ -219,16 +194,6 @@ public class SearchActivity extends AppCompatActivity {
         ReadDirectory();
         Additem();
         setAutoSearch();
-    }
-
-    private boolean DirectoryCheck()
-    {
-        if(file.exists())
-        {
-            return true;
-        }
-        else
-            return false;
     }
 
     private void ReadDirectory()
@@ -269,7 +234,6 @@ public class SearchActivity extends AppCompatActivity {
     private void setAutoSearch()
     {
         ArrayAdapter<String> adapter= new ArrayAdapter<String>(SearchActivity.this,android.R.layout.simple_dropdown_item_1line,searchlist);
-        search_edit=findViewById(R.id.search_edit);
         search_edit.setThreshold(1);
         search_edit.setAdapter(adapter);
         search_edit.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -294,10 +258,19 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.toString()==null || s.toString().equals(null) || s.toString()=="" || s.toString().equals(""))
-                {
+                String keyword = s.toString().trim();
+                if (keyword.isEmpty()) {
                     ResetListVIew();
                     ReadDirectory();
+                    Additem();
+                } else {
+                    List<Temp> filtered = new ArrayList<>();
+                    for (String name : searchlist) {
+                        if (name.toLowerCase().contains(keyword.toLowerCase())) {
+                            filtered.add(new Temp(name));
+                        }
+                    }
+                    list = filtered;
                     Additem();
                 }
             }

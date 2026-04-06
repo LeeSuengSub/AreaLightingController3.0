@@ -55,7 +55,7 @@ public class BeaconCheckFragment extends Fragment {
     CheckBox Cb_Beacon_5;
     CheckBox Cb_Beacon_6;
 
-    private final static String TAG = "BEACON_SCAN";  //  Dimming Setting Fragment Tag
+    private final static String TAG = "BEACON_SCAN";
 
     private boolean isStartScanning = false;
 
@@ -68,14 +68,11 @@ public class BeaconCheckFragment extends Fragment {
     BluetoothLeScanner LeScanner_W;
 
     private BLEScanCallback mScanCallback = null;
-
     private BLEBroadcastReceiver mBroadcastReceiver = null;
-
     private String recvMsg = null;
 
     // 생성자
     public BeaconCheckFragment() {
-
     }
 
     public static BeaconCheckFragment newInstance() {
@@ -92,17 +89,15 @@ public class BeaconCheckFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_beaconr_check, container, false);
-//        ButterKnife.bind(this, view);
 
-        //레이아웃
-        pageTitle = view.findViewById(R.id.page_title);
-        Btn_Beacon_Clear = view.findViewById(R.id.btn_beacon_clear);
-        ET_Beacon_Uuid = view.findViewById(R.id.et_beacon_uuid);
+        // 레이아웃
+        pageTitle             = view.findViewById(R.id.page_title);
+        Btn_Beacon_Clear      = view.findViewById(R.id.btn_beacon_clear);
+        ET_Beacon_Uuid        = view.findViewById(R.id.et_beacon_uuid);
         Txt_Beacon_Scan_Result = view.findViewById(R.id.txt_beacon_scan_result);
 
-        //체크박스
+        // 체크박스
         Cb_Beacon_1 = view.findViewById(R.id.Cb_beacon_1);
         Cb_Beacon_2 = view.findViewById(R.id.Cb_beacon_2);
         Cb_Beacon_3 = view.findViewById(R.id.Cb_beacon_3);
@@ -110,17 +105,18 @@ public class BeaconCheckFragment extends Fragment {
         Cb_Beacon_5 = view.findViewById(R.id.Cb_beacon_5);
         Cb_Beacon_6 = view.findViewById(R.id.Cb_beacon_6);
 
-        pageTitle.setText("비컨 스켄 설정");
+        // =====================================================
+        // Pill Tab: 구역등 설정 탭 클릭 시 ScannerSettingFragment 로 전환
+        // =====================================================
+        TextView tabScanner = view.findViewById(R.id.tab_scanner);
+        tabScanner.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, ScannerSettingFragment.newInstance())
+                        .commit()
+        );
 
-//        sharedPreferencesSingleton=SharedPreferencesSingleton.getInstance(getApplicationContext());
-//        sharedPreferencesSingleton.SharedPreferenceRead();
-//
-//        ServerData serverData=new ServerData(this);
-//        TextView TXT_RESULT_W = null;      //  로그인시 결과
-//        serverData.Login(sharedPreferencesSingleton.getID_W(),sharedPreferencesSingleton.getPASS0WORD_W()
-//                ,TXT_RESULT_W,sharedPreferencesSingleton.isDRIVER_W(),sharedPreferencesSingleton.isREMEMBER_W());
-//
-//        sharedPreferencesSingleton.ResetUpdate(sharedPreferencesSingleton.getRESET_W()+1);
+        pageTitle.setText("비컨 스켄 설정");
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -128,11 +124,10 @@ public class BeaconCheckFragment extends Fragment {
         beaconParser.setBeaconLayout(getResources().getString(R.string.beacon_parser));
         beaconParsers = new ArrayList<>();
         beaconParsers.add(beaconParser);
-        settings = (new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();      //  RequiresApi 가 필요 - Oreo 버전에서만 사용할 예정이기 때문에 Oreo 만 잡아준다
+        settings = (new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)).build();
         filters = scanFilterUtils.createScanFiltersForBeaconParsers(beaconParsers);
 
         LeScanner_W = mBluetoothAdapter.getBluetoothLeScanner();
-
         mScanCallback = new BLEScanCallback();
 
         IntentFilterValue();
@@ -146,7 +141,7 @@ public class BeaconCheckFragment extends Fragment {
             }
         }
 
-        //화면 클리어
+        // 화면 클리어
         Btn_Beacon_Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,7 +156,6 @@ public class BeaconCheckFragment extends Fragment {
     public class BLEScanCallback extends ScanCallback {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-
             super.onScanResult(callbackType, result);
 
             ScanRecord scanRecord = result.getScanRecord();
@@ -170,7 +164,6 @@ public class BeaconCheckFragment extends Fragment {
 
             if (bytevalue != null) {
                 if (bytevalue.length >= 23) {
-                    //Log.d(TAG,"byteValue SIZE : "+bytevalue.length);
                     String Address = String.format("%02x", bytevalue[2] & 0xff) + String.format("%02x", bytevalue[3] & 0xff)
                             + String.format("%02x", bytevalue[4] & 0xff) + String.format("%02x", bytevalue[5] & 0xff)
                             + String.format("%02x", bytevalue[6] & 0xff) + String.format("%02x", bytevalue[7] & 0xff)
@@ -180,7 +173,6 @@ public class BeaconCheckFragment extends Fragment {
                             + String.format("%02x", bytevalue[14] & 0xff) + String.format("%02x", bytevalue[15] & 0xff)
                             + String.format("%02x", bytevalue[16] & 0xff) + String.format("%02x", bytevalue[17] & 0xff);
 
-                    //if(Address==getResources().getString(R.string.beacon_id) || Address.equals(getResources().getString(R.string.beacon_id)))
                     if (Address == ET_Beacon_Uuid.getText().toString() || Address.equals(ET_Beacon_Uuid.getText().toString())) {
                         final double rssi = result.getRssi();
                         String MajorValue = String.format("%02X", bytevalue[18]) + String.format("%02X", bytevalue[19]);
@@ -192,7 +184,6 @@ public class BeaconCheckFragment extends Fragment {
                         try {
                             if (rssi >= -90) {
                                 switch (major) {
-                                    // 로비 비컨
                                     case 1:
                                         if (Cb_Beacon_1.isChecked()) {
                                             getActivity().runOnUiThread(new Runnable() {
@@ -222,7 +213,6 @@ public class BeaconCheckFragment extends Fragment {
                                                 }
                                             });
                                         }
-
                                         break;
                                     case 4:
                                         if (Cb_Beacon_4.isChecked()) {
@@ -233,7 +223,6 @@ public class BeaconCheckFragment extends Fragment {
                                                 }
                                             });
                                         }
-
                                         break;
                                     case 5:
                                         if (Cb_Beacon_5.isChecked()) {
@@ -244,7 +233,6 @@ public class BeaconCheckFragment extends Fragment {
                                                 }
                                             });
                                         }
-
                                         break;
                                     case 6:
                                         if (Cb_Beacon_6.isChecked()) {
@@ -270,26 +258,15 @@ public class BeaconCheckFragment extends Fragment {
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
             Log.d(TAG, "ERROR : " + errorCode);
-
-            //LeScanner_W.stopScan(scanCallback);
-            //LeScanner_W.startScan(scanCallback);
         }
     }
 
-    // Bluetooth Low Energy Scanning Start
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void StartBluetoothScanning() {
         if (!isStartScanning) {
             if (LeScanner_W != null) {
                 Log.d(TAG, "START LOW ENERGY SCANNING");
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
                 LeScanner_W.startScan(filters, settings, mScanCallback);
@@ -298,58 +275,44 @@ public class BeaconCheckFragment extends Fragment {
         }
     }
 
-    // Bluetooth Low Energy Scanning Stop
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void StopBluetoothScanning() {
         if (isStartScanning) {
             if (LeScanner_W != null) {
                 Log.d(TAG, "STOP LOW ENERGY SCANNING");
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
                 LeScanner_W.stopScan(mScanCallback);
-                isStartScanning=false;
+                isStartScanning = false;
             }
         }
     }
 
-    private void IntentFilterValue()
-    {
+    private void IntentFilterValue() {
         mBroadcastReceiver = new BLEBroadcastReceiver();
         IntentFilter stateFilter = new IntentFilter();
-        stateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED); //BluetoothAdapter.ACTION_STATE_CHANGED : 블루투스 상태변화 액션
-//        registerReceiver(mBroadcastReceiver,stateFilter);
+        stateFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
     }
 
     private class BLEBroadcastReceiver extends BroadcastReceiver {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onReceive(Context context, Intent intent) {
-
             final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-            switch(state) {
+            switch (state) {
                 case BluetoothAdapter.STATE_OFF:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         StopBluetoothScanning();
                     }
                     break;
                 case BluetoothAdapter.STATE_TURNING_OFF:
-
                     break;
                 case BluetoothAdapter.STATE_ON:
-                    // Notification Bluetooth off
-
                     break;
                 case BluetoothAdapter.STATE_TURNING_ON:
                     break;
             }
         }
-    };
+    }
 }

@@ -4,13 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,9 +29,7 @@ public class LoginActivity extends AppCompatActivity implements ServerRequestRes
 
     InputMethodManager controlManager;
 
-    LinearLayout loginForm;
     LinearLayout loginEdits;
-    ImageView lightImage;
     EditText userId;
     EditText userPassword;
     TextView errorMessageView;
@@ -60,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements ServerRequestRes
         userId.setText(userData.getId());
         userPassword.setText(userData.getPassword());
 
-        if(userData.getId().equals("") || userData.getPassword().equals("") || userData.getId()=="" || userData.getPassword()=="")
+        if(userData.getId().isEmpty() || userData.getPassword().isEmpty())
         {
             keyBoardUp();
         }
@@ -80,20 +76,10 @@ public class LoginActivity extends AppCompatActivity implements ServerRequestRes
         loginEdits.setGravity(Gravity.BOTTOM);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-//        unregisterReceiver(broadcastReceiver);
-    }
-
     public void keyBoardUp(){
         userId.requestFocus();
         controlManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         loginEdits.setGravity(Gravity.NO_GRAVITY);
-
-        Log.d(TAG,"MainActivity onViewClicked keyBoardUp");
-
     }
 
     // 로그인 버튼 클릭시
@@ -106,8 +92,6 @@ public class LoginActivity extends AppCompatActivity implements ServerRequestRes
 
     @Override
     public boolean Result(ResultType resultType, boolean result,String reason) {
-        Log.d(TAG,"RESULT TYPE : "+resultType+" , RESULT : "+result+" , RESON : "+reason);
-
         if(!result)
         {
             errorMessageView.setVisibility(View.VISIBLE);

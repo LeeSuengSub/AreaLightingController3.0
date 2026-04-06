@@ -115,23 +115,7 @@ public class ScannerSettingIndiFragment extends Fragment {
 
         pageTitle.setText("개별 구역등 설정");
 
-        // 채널 변경
-        // 채널 설정
-//        Btn_ChannelSetting.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                if(ET_ChannelSetting.getText().toString().isEmpty())
-//                {
-//                    Toast.makeText(getContext(),"채널을 입력하여 주세요~",Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                Intent intent=new Intent(usbManagement.getAction_Channel_Change());
-//                intent.putExtra("channel",ET_ChannelSetting.getText().toString());
-//                getActivity().sendBroadcast(intent);
-//            }
-//        });
+
         // 동글 채널 변경
         btnChannelSetting.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -29,7 +29,6 @@ import net.woorisys.lighting.control3.admin.sjp.EditTextErrorCheck;
 import net.woorisys.lighting.control3.admin.sjp.RememberData;
 import net.woorisys.lighting.control3.admin.sjp.observer.BroadcastReceiverListener;
 import net.woorisys.lighting.control3.admin.sjp.observer.FragmentValue;
-import net.woorisys.lighting.control3.admin.sjp.observer.ResultValue;
 import net.woorisys.lighting.control3.admin.sjp.usbManagement;
 
 
@@ -40,10 +39,8 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
     //Log Tag 구분 하기 위한 String
     private final static String TAG="BASE_ACTIVITY";
 
-    // 생성한 Broadcast Action 동작 시키기 위한 BroadcastReceiver 등록
     private usbManagement broadcastReceiver;
     IntentFilter intentFilter;
-    ResultValue resultValue;
 
     /** ---------------------------------------------- **/
     private long backPressedTime = 0;
@@ -63,24 +60,29 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.tab1:
-                    ScannerSettingFragment scannerSettingFragment = ScannerSettingFragment.newInstance();
-                    replaceFragment(scannerSettingFragment);
+                    replaceFragment(ScannerSettingFragment.newInstance());
                     pageTitle.setText("CSV 그룹 설정");
+                    setCsvAreaVisible(true);
                     return true;
                 case R.id.tab2:
-                    ScannerSettingIndiFragment scannerSettingIndiFragment = ScannerSettingIndiFragment.newInstance();
-                    replaceFragment(scannerSettingIndiFragment);
+                    replaceFragment(ScannerSettingIndiFragment.newInstance());
                     pageTitle.setText("개별 그룹 설정");
+                    setCsvAreaVisible(true);
                     return true;
                 case R.id.tab3:
-                    GatewaySettingFragment gatewaySettingFragment = GatewaySettingFragment.newInstance();
-                    replaceFragment(gatewaySettingFragment);
+                    replaceFragment(GatewaySettingFragment.newInstance());
                     pageTitle.setText("게이트웨이 설정");
+                    setCsvAreaVisible(true);
                     return true;
                 case R.id.tab4:
-                    BeaconCheckFragment beaconCheckFragment = BeaconCheckFragment.newInstance();
-                    replaceFragment(beaconCheckFragment);
-                    pageTitle.setText("비컨 확인");
+                    replaceFragment(FullnessDisplayFragment.newInstance());
+                    pageTitle.setText("만치기 설정");
+                    setCsvAreaVisible(false);
+                    return true;
+                case R.id.tab5:
+                    replaceFragment(BleScannerFragment.newInstance());
+                    pageTitle.setText("BLE 스캐너");
+                    setCsvAreaVisible(false);
                     return true;
             }
             return false;
@@ -93,33 +95,19 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
-//        ButterKnife.bind(this);
-
         pageTitle=findViewById(R.id.page_title);
         btnSearch=findViewById(R.id.btn_Search);
         txt_FilePath_Whole=findViewById(R.id.txt_Path);
         getTxt_FilePath_Whole=findViewById(R.id.txt_Path_);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
 
-        /** PSJ **/
-        //region IntentFilter
-        // USB 동작 관련 BroadcastReceiver
-        intentFilter=new IntentFilter();
-
-        // 기타
-        intentFilter.addAction(usbManagement.getAction_Usb_Detached());                 //  Usb 분리
-        intentFilter.addAction(usbManagement.getAction_Usb_Init());                     //  Usb Initialize
-//        intentFilter.addAction(usbManagement.getAction_Group_DImming_Enable_B());
-//        intentFilter.addAction(usbManagement.getAction_Group_Dimming_Disable_B());
-        //endregion
-
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(usbManagement.getAction_Usb_Detached());
+        intentFilter.addAction(usbManagement.getAction_Usb_Init());
         intentFilter.addAction(usbManagement.getAction_Channel_Change());
         intentFilter.addAction(usbManagement.getAction_Group_Setting());
         intentFilter.addAction(usbManagement.getAction_Group_Check());
         intentFilter.addAction(usbManagement.getAction_Setting_Confirm());
-        //intentFilter.addAction(usbManagement.getAction_Setting());
-
-        //intentFilter.addAction(usbManagement.getAction_Group_Toggle());
         intentFilter.addAction(usbManagement.getAction_Router_Rejoin());
 
         intentFilter.addAction(usbManagement.getAction_Gateway_Check());
@@ -135,7 +123,7 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
 
         String RememberPath=RememberData.getInstance().getSavefilepath().toString();
 
-        if(RememberPath=="NULL" || RememberPath.equals("NULL"))
+        if(RememberPath.equals("NULL"))
         {
             txt_FilePath_Whole.setText("");
         }
@@ -180,6 +168,27 @@ public class BaseActivity extends AppCompatActivity implements BroadcastReceiver
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment).commit();
+    }
+
+    /**
+     * tab1~3: CSV 선택 버튼 및 파일명 표시 영역을 보임
+     * tab4~5: 해당 영역을 숨김
+     */
+    private void setCsvAreaVisible(boolean visible) {
+        btnSearch.setVisibility(visible ? View.VISIBLE : View.GONE);
+
+        if (!visible) {
+            // tab4/5 에서는 파일명 영역 무조건 숨김
+            txt_FilePath_Whole.setVisibility(View.GONE);
+            getTxt_FilePath_Whole.setVisibility(View.GONE);
+        } else {
+            // tab1~3 으로 돌아올 때 — 파일이 선택돼 있으면 다시 표시
+            String path = RememberData.getInstance().getSavefilepath().toString();
+            if (!path.equals("NULL")) {
+                txt_FilePath_Whole.setVisibility(View.VISIBLE);
+                getTxt_FilePath_Whole.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
